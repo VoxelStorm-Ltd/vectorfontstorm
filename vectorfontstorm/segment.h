@@ -27,6 +27,8 @@ public:
   segment();
   ~segment();
 
+  point &get_second_to_last_point();
+
   void get_outline(std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data) const;
 
   void subdivide_conic(std::vector<segment> &new_segments) const;
