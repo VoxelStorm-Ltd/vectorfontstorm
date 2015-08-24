@@ -21,7 +21,9 @@ point &segment::get_second_to_last_point() {
 void segment::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
                           std::vector<GLuint>           &ibo_data) const {
   /// Output the outline for this segment to a buffer
-  //std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points" << std::endl;
+  #ifdef DEBUG_VECTORFONTSTORM
+    //std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   switch(type) {
   case segment::types::UNKNOWN:
     std::cout << "VectorFontStorm: ERROR: curve type unknown!" << std::endl;

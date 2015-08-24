@@ -16,7 +16,9 @@ glyph::~glyph() {
 
 void glyph::cache_outline() {
   /// Walk through the glyph's components and cache the outline it makes
-  std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" with " << contours.size() << " contours" << std::endl;
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" with " << contours.size() << " contours" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   for(contour const &c : contours) {
     c.get_outline(vbo_data, ibo_data);
   }

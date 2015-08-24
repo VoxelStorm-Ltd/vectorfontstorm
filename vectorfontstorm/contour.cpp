@@ -21,7 +21,9 @@ segment &contour::get_second_to_last_segment() {
 void contour::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
                           std::vector<GLuint>           &ibo_data) const {
   /// Output the outline for this contour to a buffer
-  //std::cout << "VectorFontStorm: DEBUG:   Contour with " << segments.size() << " segments" << std::endl;
+  #ifdef DEBUG_VECTORFONTSTORM
+    //std::cout << "VectorFontStorm: DEBUG:   Contour with " << segments.size() << " segments" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   for(segment const &s : segments) {
     s.get_outline(vbo_data, ibo_data);
   }
