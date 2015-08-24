@@ -2,6 +2,9 @@
 #include <vector>
 #include "vmath.h"
 #include "font.h"
+#include "contour.h"
+#include "segment.h"
+#include "point.h"
 
 namespace vectorfontstorm {
 
@@ -15,6 +18,55 @@ string::string(std::string const &newstring,
     contents(newstring),
     thisfont(newfont) {
   /// Default constructor
+  init(position, orientation, scale);
+}
+string::string(string &&other) noexcept
+  : align(other.align),
+    contents(std::move(other.contents)),
+    thisfont(other.thisfont) {
+  /// Move constructor
+  #ifndef NDEBUG
+    std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
+  #endif // NDEBUG
+  align = other.align;
+  std::swap(contents, other.contents);
+  thisfont = other.thisfont;
+  std::swap(vbo, other.vbo);
+  std::swap(ibo, other.ibo);
+  std::swap(num_verts, other.num_verts);
+  std::swap(bounds_left, other.bounds_left);
+  std::swap(bounds_bottom, other.bounds_bottom);
+  std::swap(bounds_right, other.bounds_right);
+  std::swap(bounds_top, other.bounds_top);
+}
+string &string::operator=(string &&other) noexcept {
+  /// Move assignment constructor
+  #ifndef NDEBUG
+    std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" in assignment - this is expensive." << std::endl;
+  #endif // NDEBUG
+  align = other.align;
+  std::swap(contents, other.contents);
+  thisfont = other.thisfont;
+  std::swap(vbo, other.vbo);
+  std::swap(ibo, other.ibo);
+  std::swap(num_verts, other.num_verts);
+  std::swap(bounds_left, other.bounds_left);
+  std::swap(bounds_bottom, other.bounds_bottom);
+  std::swap(bounds_right, other.bounds_right);
+  std::swap(bounds_top, other.bounds_top);
+  return *this;
+}
+
+string::~string() {
+  /// Default destructor
+  glDeleteBuffers(1, &vbo);
+  glDeleteBuffers(1, &ibo);
+}
+
+void string::init(Vector3f const &position,
+                  Quatf const &orientation,
+                  double scale) {
+  /// Initialise this string
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ibo);
 
@@ -76,11 +128,18 @@ string::string(std::string const &newstring,
     p *= static_cast<float>(scale);                                             // scale the model
     p *= orientation;                                                           // rotate the model
     p += position;                                                              // position the model in space
+    bounds_left   = std::min(bounds_left,   p.x);                               // update the outer bounds
+    bounds_right  = std::max(bounds_right,  p.x);
+    bounds_top    = std::min(bounds_top,    p.y);
+    bounds_bottom = std::max(bounds_bottom, p.y);
   }
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" bounds " << get_bounds_2d() << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
 
   num_verts = ibo_data.size();
   if(num_verts == 0) {
-    std::cout << "VectorFontStorm: WARNING: not uploading zero-sized buffer for string \"" << newstring << "\"" << std::endl;
+    std::cout << "VectorFontStorm: WARNING: not uploading zero-sized buffer for string \"" << contents << "\"" << std::endl;
     return;
   }
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -91,10 +150,39 @@ string::string(std::string const &newstring,
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-string::~string() {
-  /// Default destructor
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ibo);
+std::string const &string::get_contents() const {
+  return contents;
+}
+
+float string::get_bounds_left() const {
+  return bounds_left;
+}
+float string::get_bounds_right() const {
+  return bounds_right;
+}
+float string::get_bounds_top() const {
+  return bounds_top;
+}
+float string::get_bounds_bottom() const {
+  return bounds_bottom;
+}
+Vector2f string::string::get_bounds_bottomleft_2d() const {
+  return Vector2f(bounds_left, bounds_bottom);
+}
+Vector2f string::get_bounds_topright_2d() const {
+  return Vector2f(bounds_right, bounds_top);
+}
+Vector3f string::get_bounds_bottomleft_3d() const {
+  return Vector3f(bounds_left, bounds_bottom, 0.0f);
+}
+Vector3f string::get_bounds_topright_3d() const {
+  return Vector3f(bounds_right, bounds_top, 0.0f);
+}
+Aabb2f string::get_bounds_2d() const {
+  return Aabb2f(bounds_left, bounds_bottom, bounds_right, bounds_top);
+}
+Aabb3f string::get_bounds_3d() const {
+  return Aabb3f(bounds_left, bounds_bottom, 0.0f, bounds_right, bounds_top, 0.0f);
 }
 
 void string::render() const {
