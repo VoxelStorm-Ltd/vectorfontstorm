@@ -44,7 +44,7 @@ void glyph::get_outline(std::vector<Vector3<GLfloat>> &vbo_data_out,
       // whitespace glyphs have no outlines so this is normal
     }
   }
-  GLuint const vertex_offset = vbo_data_out.size();
+  GLuint const vertex_offset = static_cast<GLuint>(vbo_data_out.size());
   vbo_data_out.reserve(vbo_data_out.size() + vbo_data.size());
   ibo_data_out.reserve(ibo_data_out.size() + ibo_data.size());
   auto const newrange_start  = ibo_data_out.end();                              // this NEEDS the reserve first, or the iterator will be invalidated

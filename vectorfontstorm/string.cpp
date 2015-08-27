@@ -75,9 +75,9 @@ void string::init(Vector3f const &position,
 
   float advance = 0.0f;
   for(auto const &thischar : contents) {
-    GLuint vbo_start = vbo_data.size();
+    GLuint vbo_start = static_cast<GLuint>(vbo_data.size());
     float const new_advance = thisfont.get_outline(thischar, vbo_data, ibo_data);
-    GLuint vbo_end = vbo_data.size();
+    GLuint vbo_end = static_cast<GLuint>(vbo_data.size());
     // apply the previous advance to every point in this character
     for(GLuint p = vbo_start; p != vbo_end; ++p) {
       vbo_data[p].x += advance;
@@ -137,7 +137,7 @@ void string::init(Vector3f const &position,
     std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" bounds " << get_bounds_2d() << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
 
-  num_verts = ibo_data.size();
+  num_verts = static_cast<GLuint>(ibo_data.size());
   if(num_verts == 0) {
     std::cout << "VectorFontStorm: WARNING: not uploading zero-sized buffer for string \"" << contents << "\"" << std::endl;
     return;

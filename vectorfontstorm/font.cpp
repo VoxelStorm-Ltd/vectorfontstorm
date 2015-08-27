@@ -21,7 +21,7 @@ font::font(unsigned char const *const memory_offset,
   FT_Set_Char_Size(face, 0, font_size_ft, dpi, dpi);                            // set char size
   FT_Set_Transform(face, nullptr, nullptr);                                     // set transform matrix - identity
 
-  scale = height / face->size->metrics.height;
+  scale = height / static_cast<double>(face->size->metrics.height);
 
   #ifndef NDEBUG
     std::cout << "VectorFontStorm: Loading font size " << memory_size / 1024 << "KB" << std::endl;
@@ -93,7 +93,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     std::cout << "VectorFontStorm: DEBUG: outline.n_contours " << outline.n_contours << std::endl;
     std::cout << "VectorFontStorm: DEBUG: outline.n_points " << outline.n_points << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
-  it = glyphs.emplace(thischar, glyph(thischar, static_cast<float>(face->glyph->metrics.horiAdvance * scale))).first;
+  it = glyphs.emplace(thischar, glyph(thischar, static_cast<float>(static_cast<double>(face->glyph->metrics.horiAdvance) * scale))).first;
   glyph &thisglyph(it->second);
   for(int point_start = 0, c = 0; c < outline.n_contours; ++c) {                // can n_contours be contours?  I've no idea
     thisglyph.contours.emplace_back();
@@ -105,7 +105,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     #endif // DEBUG_VECTORFONTSTORM
     for(int p = point_start; p <= point_end; ++p) {                             // note: we're NOT stopping one short of the end point, last segment goes on top
       point::types const ptype = outline.tags[p] & 0b00000001 ? point::types::ON : (outline.tags[p] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
-      thiscontour.segments.back().points.emplace_back(outline.points[p].x * scale, outline.points[p].y * scale, ptype);
+      thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[p].x) * scale, static_cast<double>(outline.points[p].y) * scale, ptype);
       point const &thispoint(thiscontour.segments.back().points.back());
       #ifdef DEBUG_VECTORFONTSTORM
         std::cout << "VectorFontStorm: DEBUG: processing " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() << std::endl;
@@ -203,7 +203,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     }
     // special treatment for last segment of the curve
     point::types const ptype = outline.tags[point_end] & 0b00000001 ? point::types::ON : (outline.tags[point_end] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
-    thiscontour.segments.back().points.emplace_back(outline.points[point_end].x * scale, outline.points[point_end].y * scale, ptype);
+    thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[point_end].x) * scale, static_cast<double>(outline.points[point_end].y) * scale, ptype);
     point const &thispoint(thiscontour.segments.back().points.back());
     switch(thiscontour.segments.front().points.front().type) {
     case point::types::ON:                                                      // the first point was an ON point
