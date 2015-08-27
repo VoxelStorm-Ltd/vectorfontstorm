@@ -11,6 +11,7 @@ namespace vectorfontstorm {
 class font;
 
 class string {
+public:
   enum class aligntype {
     TOPLEFT,
     TOP,
@@ -22,6 +23,7 @@ class string {
     BOTTOM,
     BOTTOMRIGHT
   };
+private:
   aligntype align = aligntype::CENTRE;
 
   std::string contents;
