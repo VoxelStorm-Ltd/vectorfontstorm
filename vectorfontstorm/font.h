@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include "vmath.h"
+#include "vmath_forward_dec.h"
 #include "glyph.h"
 
 namespace vectorfontstorm {

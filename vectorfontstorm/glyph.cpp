@@ -1,4 +1,6 @@
 #include "glyph.h"
+#include <boost/range/iterator_range.hpp>
+#include "vmath.h"
 #include "contour.h"
 
 namespace vectorfontstorm {
