@@ -106,7 +106,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     for(int p = point_start; p <= point_end; ++p) {                             // note: we're NOT stopping one short of the end point, last segment goes on top
       point::types const ptype = outline.tags[p] & 0b00000001 ? point::types::ON : (outline.tags[p] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
       thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[p].x) * scale, static_cast<double>(outline.points[p].y) * scale, ptype);
-      point const &thispoint(thiscontour.segments.back().points.back());
+      point const thispoint(thiscontour.segments.back().points.back());         // copy, do not take a reference!
       #ifdef DEBUG_VECTORFONTSTORM
         std::cout << "VectorFontStorm: DEBUG: processing " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
@@ -171,7 +171,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
               thiscontour.segments.emplace_back();                              // this segment had already been started, so this point closed it
               thiscontour.segments.back().points.emplace_back(midpoint, point::types::VIRTUAL);
               thiscontour.segments.back().points.emplace_back(thispoint);       // copy this point to start the next segment
-              segment &lastsegment(thiscontour.get_second_to_last_segment());  // the one before this one we just pushed
+              segment &lastsegment(thiscontour.get_second_to_last_segment());   // the one before this one we just pushed
               lastsegment.points.pop_back();                                    // remove newest point from last segment (we've moved it to the next seg)
               lastsegment.points.emplace_back(midpoint, point::types::VIRTUAL); // and stitch the gap with the virtual point
               #ifdef DEBUG_VECTORFONTSTORM
@@ -204,7 +204,7 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     // special treatment for last segment of the curve
     point::types const ptype = outline.tags[point_end] & 0b00000001 ? point::types::ON : (outline.tags[point_end] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
     thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[point_end].x) * scale, static_cast<double>(outline.points[point_end].y) * scale, ptype);
-    point const &thispoint(thiscontour.segments.back().points.back());
+    point const thispoint(thiscontour.segments.back().points.back());           // copy, do not take a reference!
     switch(thiscontour.segments.front().points.front().type) {
     case point::types::ON:                                                      // the first point was an ON point
       thiscontour.segments.back().type = segment::types::LINE;
