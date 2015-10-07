@@ -73,52 +73,108 @@ void string::init(Vector3f const &position,
   std::vector<Vector3<GLfloat>> vbo_data;
   std::vector<GLuint>           ibo_data;
 
-  float advance = 0.0f;
+  Vector2f advance;
+  Vector2f advance_max;
+  float const line_height = static_cast<float>(thisfont.get_height());
+  struct line {
+    float width = 0.0f;
+    GLuint index_from = 0;
+    GLuint index_to   = 0;
+  };
+  std::vector<line> lines(1);
   for(auto const &thischar : contents) {
-    GLuint vbo_start = static_cast<GLuint>(vbo_data.size());
-    float const new_advance = thisfont.get_outline(thischar, vbo_data, ibo_data);
-    GLuint vbo_end = static_cast<GLuint>(vbo_data.size());
-    // apply the previous advance to every point in this character
-    for(GLuint p = vbo_start; p != vbo_end; ++p) {
-      vbo_data[p].x += advance;
+    if(thischar == '\n') {                                                      // handle newlines
+      lines.back().width = advance.x;
+      lines.back().index_to = vbo_data.size();
+      advance.y += line_height;
+      advance.x = 0.0f;
+      lines.emplace_back();
+      lines.back().index_from = vbo_data.size();
+    } else {
+      GLuint vbo_start = static_cast<GLuint>(vbo_data.size());
+      float const new_advance = thisfont.get_outline(thischar, vbo_data, ibo_data);
+      GLuint vbo_end = static_cast<GLuint>(vbo_data.size());
+      for(GLuint p = vbo_start; p != vbo_end; ++p) {                            // apply the previous advance to every point in this character
+        vbo_data[p].x += advance.x;
+        vbo_data[p].y -= advance.y;
+      }
+      advance.x += new_advance;
     }
-    advance += new_advance;
+    advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
   }
+  lines.back().width = advance.x;
+  lines.back().index_to = vbo_data.size();
   float align_offset_width, align_offset_height;
   switch(align) {                                                               // horizontal alignment
+  // left alignment
   case aligntype::TOPLEFT:
   case aligntype::LEFT:
   case aligntype::BOTTOMLEFT:
   default:
     align_offset_width = 0.0f;
     break;
+  // horizontal centre alignment
   case aligntype::TOP:
   case aligntype::CENTRE:
   case aligntype::BOTTOM:
-    align_offset_width = advance * -0.5f;
+    #ifdef DEBUG_VECTORFONTSTORM
+      std::cout << "DEBUG: centred string start" << std::endl;
+    #endif // DEBUG_VECTORFONTSTORM
+    for(line const &this_line : lines) {
+      float const offset = (advance_max.x - this_line.width) / 2.0f;            // offset for centre align
+      #ifdef DEBUG_VECTORFONTSTORM
+        std::cout << "DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
+        std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " vbo_data.size() " << vbo_data.size() << std::endl;
+      #endif // DEBUG_VECTORFONTSTORM
+      for(GLuint p = this_line.index_from; p != this_line.index_to; ++p) {      // slide every point in this line by the offset
+        vbo_data[p].x += offset;
+      }
+    }
+    align_offset_width = advance_max.x * -0.5f;
     break;
+  // right alignment
   case aligntype::TOPRIGHT:
   case aligntype::RIGHT:
   case aligntype::BOTTOMRIGHT:
-    align_offset_width = -advance;
+    #ifdef DEBUG_VECTORFONTSTORM
+      std::cout << "DEBUG: right-aligned string start" << std::endl;
+    #endif // DEBUG_VECTORFONTSTORM
+    for(line const &this_line : lines) {
+      float const offset = advance_max.x - this_line.width;                     // offset for right align
+      #ifdef DEBUG_VECTORFONTSTORM
+        std::cout << "DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
+        //std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " vbo_data.size() " << vbo_data.size() << std::endl;
+      #endif // DEBUG_VECTORFONTSTORM
+      for(GLuint p = this_line.index_from; p != this_line.index_to; ++p) {      // slide every point in this line by the offset
+        vbo_data[p].x += offset;
+      }
+    }
+    align_offset_width = -advance_max.x;
     break;
   }
   switch(align) {                                                               // vertical alignment
+  // top alignment
   case aligntype::TOPLEFT:
   case aligntype::TOP:
   case aligntype::TOPRIGHT:
-    align_offset_height = static_cast<float>(-thisfont.get_height());
+    align_offset_height = static_cast<float>(-line_height);
     break;
+  // vertical centre alignment
   case aligntype::LEFT:
   case aligntype::RIGHT:
   case aligntype::CENTRE:
-    align_offset_height = static_cast<float>(thisfont.get_height() * -0.5);
+    align_offset_height = static_cast<float>(((line_height + advance_max.y) * 0.5f) - line_height);
+    #ifdef DEBUG_VECTORFONTSTORM
+      //std::cout << "DEBUG: string " << contents << std::endl;
+      std::cout << "DEBUG: string vertical advance " << advance_max.y << " align_offset_height " << align_offset_height << std::endl;
+    #endif // DEBUG_VECTORFONTSTORM
     break;
+  // bottom alignment
   case aligntype::BOTTOMLEFT:
   case aligntype::BOTTOM:
   case aligntype::BOTTOMRIGHT:
   default:
-    align_offset_height = 0.0f;
+    align_offset_height = -advance_max.y;
     break;
   }
 
