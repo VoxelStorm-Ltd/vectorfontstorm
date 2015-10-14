@@ -14,13 +14,14 @@ class glyph {
   friend class font;
 
   std::vector<contour> contours;
-  char character = '\0';                                                        // what ascii character this glyph represents
-  float advance = 0.0f;                                                         // how far the next glyph needs to advance
 
   std::vector<Vector3<GLfloat>> vbo_data;                                       // cached point vbo data values for rapid output
   std::vector<GLuint>           ibo_data;                                       // cached indices, need to be offset when outputting
 
+  float advance = 0.0f;                                                         // how far the next glyph needs to advance
+
   bool whitespace = false;                                                      // whether this glyph is pure whitespace, i.e. nothing to draw
+  char character = '\0';                                                        // what ascii character this glyph represents
 
 public:
   glyph(char newchar, float newadvance);

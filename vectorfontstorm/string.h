@@ -24,10 +24,10 @@ public:
     BOTTOMRIGHT
   };
 private:
-  aligntype align = aligntype::CENTRE;
-
   std::string contents;
   vectorfontstorm::font &thisfont;
+
+  aligntype align = aligntype::CENTRE;
 
   GLuint vbo = 0;                                                               // vertex buffer object for vertices
   GLuint ibo = 0;                                                               // index buffer object
