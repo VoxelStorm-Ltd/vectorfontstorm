@@ -5,8 +5,8 @@
 namespace vectorfontstorm {
 
 glyph::glyph(char newchar, float newadvance)
-  : character(newchar),
-    advance(newadvance) {
+  : advance(newadvance),
+    character(newchar) {
   /// Default constructor
 
 }

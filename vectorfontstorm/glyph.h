@@ -29,7 +29,7 @@ public:
 
   void cache_outline();
 
-  float get_advance() const;
+  float get_advance() const __attribute__((__pure__));
   void get_outline(std::vector<Vector3<GLfloat>> &vbo_data_out, std::vector<GLuint> &ibo_data_out);
 };
 

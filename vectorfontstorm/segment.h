@@ -27,7 +27,7 @@ public:
   segment();
   ~segment();
 
-  point &get_second_to_last_point();
+  point &get_second_to_last_point() __attribute__((__pure__));
 
   void get_outline(std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data) const;
 

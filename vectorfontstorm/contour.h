@@ -19,7 +19,7 @@ public:
   contour();
   ~contour();
 
-  segment &get_second_to_last_segment();
+  segment &get_second_to_last_segment() __attribute__((__pure__));
 
   void get_outline(std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data) const;
 };

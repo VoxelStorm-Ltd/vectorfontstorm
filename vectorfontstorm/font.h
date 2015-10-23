@@ -25,7 +25,7 @@ public:
   font(unsigned char const *const memory_offset, size_t const memory_size, double desired_height = 1.0);
   ~font();
 
-  double get_height() const;
+  double get_height() const __attribute__((__pure__));
 
   float get_outline(char const thischar, std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data);
 

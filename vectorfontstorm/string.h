@@ -55,12 +55,12 @@ private:
   void init(Vector3f const &position, Quatf const &orientation, double scale);
 
 public:
-  std::string const &get_contents() const;
+  std::string const &get_contents() const __attribute__((__unused__, __const__));
 
-  float get_bounds_left() const;
-  float get_bounds_right() const;
-  float get_bounds_top() const;
-  float get_bounds_bottom() const;
+  float get_bounds_left()   const __attribute__((__const__));
+  float get_bounds_right()  const __attribute__((__const__));
+  float get_bounds_top()    const __attribute__((__const__));
+  float get_bounds_bottom() const __attribute__((__const__));
   Vector2f get_bounds_bottomleft_2d() const;
   Vector2f get_bounds_topright_2d() const;
   Vector3f get_bounds_bottomleft_3d() const;

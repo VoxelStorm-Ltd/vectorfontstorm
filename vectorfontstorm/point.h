@@ -21,7 +21,7 @@ class point {
 public:
   point(float x, float y, types newtype);
   point(Vector2f const &newcoords, types newtype);
-  ~point();
+  ~point() __attribute__((__const__));
 };
 
 }

@@ -14,16 +14,16 @@ string::string(std::string const &newstring,
                Quatf const &orientation,
                double scale,
                aligntype alignment)
-  : align(alignment),
-    contents(newstring),
-    thisfont(newfont) {
+  : contents(newstring),
+    thisfont(newfont),
+    align(alignment) {
   /// Default constructor
   init(position, orientation, scale);
 }
 string::string(string &&other) noexcept
-  : align(other.align),
-    contents(std::move(other.contents)),
-    thisfont(other.thisfont) {
+  : contents(std::move(other.contents)),
+    thisfont(other.thisfont),
+    align(other.align) {
   /// Move constructor
   #ifndef NDEBUG
     std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
@@ -85,11 +85,11 @@ void string::init(Vector3f const &position,
   for(auto const &thischar : contents) {
     if(thischar == '\n') {                                                      // handle newlines
       lines.back().width = advance.x;
-      lines.back().index_to = vbo_data.size();
+      lines.back().index_to = static_cast<GLuint>(vbo_data.size());
       advance.y += line_height;
       advance.x = 0.0f;
       lines.emplace_back();
-      lines.back().index_from = vbo_data.size();
+      lines.back().index_from = static_cast<GLuint>(vbo_data.size());
     } else {
       GLuint vbo_start = static_cast<GLuint>(vbo_data.size());
       float const new_advance = thisfont.get_outline(thischar, vbo_data, ibo_data);
@@ -103,7 +103,7 @@ void string::init(Vector3f const &position,
     advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
   }
   lines.back().width = advance.x;
-  lines.back().index_to = vbo_data.size();
+  lines.back().index_to = static_cast<GLuint>(vbo_data.size());
   float align_offset_width, align_offset_height;
   switch(align) {                                                               // horizontal alignment
   // left alignment
@@ -157,13 +157,13 @@ void string::init(Vector3f const &position,
   case aligntype::TOPLEFT:
   case aligntype::TOP:
   case aligntype::TOPRIGHT:
-    align_offset_height = static_cast<float>(-line_height);
+    align_offset_height = -line_height;
     break;
   // vertical centre alignment
   case aligntype::LEFT:
   case aligntype::RIGHT:
   case aligntype::CENTRE:
-    align_offset_height = static_cast<float>(((line_height + advance_max.y) * 0.5f) - line_height);
+    align_offset_height = ((line_height + advance_max.y) * 0.5f) - line_height;
     #ifdef DEBUG_VECTORFONTSTORM
       //std::cout << "DEBUG: string " << contents << std::endl;
       std::cout << "DEBUG: string vertical advance " << advance_max.y << " align_offset_height " << align_offset_height << std::endl;
