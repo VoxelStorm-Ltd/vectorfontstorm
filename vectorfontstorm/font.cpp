@@ -68,12 +68,29 @@ double font::get_height() const {
 }
 
 float font::get_outline(char const thischar,
-                        std::vector<Vector3<GLfloat>> &vbo_data,
-                        std::vector<GLuint>           &ibo_data) {
-  /// Output the vertices for this character to an indexed buffer, and return the advance
+                        buffer_data &data_out) {
+  /// Output the vertices for this character's outline to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
   glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
-  thisglyph.get_outline(vbo_data, ibo_data);
+  thisglyph.get_outline(data_out);
+  return thisglyph.get_advance();
+}
+float font::get_fill(char const thischar,
+                     buffer_data &data_out) {
+  /// Output the vertices for this character's fill to an indexed buffer, and return the advance
+  auto it = glyphs.find(thischar);
+  glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
+  thisglyph.get_fill(data_out);
+  return thisglyph.get_advance();
+}
+float font::get_outline_and_fill(char const thischar,
+                                 buffer_data &data_out_outline,
+                                 buffer_data &data_out_fill) {
+  /// Output the vertices for this character's fill and outlines to an indexed buffer, and return the advance
+  auto it = glyphs.find(thischar);
+  glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
+  thisglyph.get_outline(data_out_outline);
+  thisglyph.get_fill(data_out_fill);
   return thisglyph.get_advance();
 }
 

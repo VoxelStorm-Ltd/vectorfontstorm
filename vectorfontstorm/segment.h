@@ -8,6 +8,7 @@
 
 namespace vectorfontstorm {
 
+struct buffer_data;
 class point;
 
 class segment {
@@ -29,7 +30,7 @@ public:
 
   point &get_second_to_last_point() __attribute__((__pure__));
 
-  void get_outline(std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data) const;
+  void get_outline(buffer_data &data_out) const;
 
   void subdivide_conic(std::vector<segment> &new_segments) const;
   void subdivide_cubic(std::vector<segment> &new_segments) const;

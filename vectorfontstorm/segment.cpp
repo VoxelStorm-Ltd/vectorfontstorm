@@ -1,4 +1,5 @@
 #include "segment.h"
+#include "buffer_data.h"
 #include "point.h"
 
 namespace vectorfontstorm {
@@ -18,8 +19,7 @@ point &segment::get_second_to_last_point() {
   return points[points.size() - 1];
 }
 
-void segment::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
-                          std::vector<GLuint>           &ibo_data) const {
+void segment::get_outline(buffer_data &data_out) const {
   /// Output the outline for this segment to a buffer
   #ifdef DEBUG_VECTORFONTSTORM
     //std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points" << std::endl;
@@ -29,17 +29,17 @@ void segment::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
     std::cout << "VectorFontStorm: ERROR: curve type unknown!" << std::endl;
     return;
   case segment::types::LINE:
-    ibo_data.emplace_back(vbo_data.size());
-    vbo_data.emplace_back(points.front().coords.x, points.front().coords.y, 0.0f);
-    ibo_data.emplace_back(vbo_data.size());
-    vbo_data.emplace_back(points.back().coords.x, points.back().coords.y, 0.0f);
+    data_out.ibo.emplace_back(data_out.vbo.size());
+    data_out.vbo.emplace_back(points.front().coords.x, points.front().coords.y, 0.0f);
+    data_out.ibo.emplace_back(data_out.vbo.size());
+    data_out.vbo.emplace_back(points.back().coords.x, points.back().coords.y, 0.0f);
     break;
   case segment::types::CONIC:
     {
       std::vector<segment> subdivisions;
       subdivide_conic(subdivisions);
       for(auto const &s : subdivisions) {
-        s.get_outline(vbo_data, ibo_data);
+        s.get_outline(data_out);
       }
     }
     break;
@@ -48,7 +48,7 @@ void segment::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
       std::vector<segment> subdivisions;
       subdivide_cubic(subdivisions);
       for(auto const &s : subdivisions) {
-        s.get_outline(vbo_data, ibo_data);
+        s.get_outline(data_out);
       }
     }
     break;

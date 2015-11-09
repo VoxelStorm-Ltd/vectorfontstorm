@@ -27,7 +27,9 @@ public:
 
   double get_height() const __attribute__((__pure__));
 
-  float get_outline(char const thischar, std::vector<Vector3<GLfloat>> &vbo_data, std::vector<GLuint> &ibo_data);
+  float get_outline(         char const thischar, buffer_data &data_out);
+  float get_fill(            char const thischar, buffer_data &data_out);
+  float get_outline_and_fill(char const thischar, buffer_data &data_out_outline, buffer_data &data_out_fill);
 
   glyph &load_glyph_from_freetype(char const thischar, std::unordered_map<char, glyph>::iterator &it);
 };

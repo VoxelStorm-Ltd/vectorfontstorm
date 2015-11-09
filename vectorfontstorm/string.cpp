@@ -1,6 +1,7 @@
 #include "string.h"
 #include <vector>
 #include "vmath.h"
+#include "cast_if_required.h"
 #include "font.h"
 #include "contour.h"
 #include "segment.h"
@@ -31,9 +32,8 @@ string::string(string &&other) noexcept
   align = other.align;
   std::swap(contents, other.contents);
   thisfont = other.thisfont;
-  std::swap(vbo, other.vbo);
-  std::swap(ibo, other.ibo);
-  std::swap(num_verts, other.num_verts);
+  std::swap(outline, other.outline);
+  std::swap(fill,    other.fill);
   std::swap(bounds_left, other.bounds_left);
   std::swap(bounds_bottom, other.bounds_bottom);
   std::swap(bounds_right, other.bounds_right);
@@ -47,9 +47,8 @@ string &string::operator=(string &&other) noexcept {
   align = other.align;
   std::swap(contents, other.contents);
   thisfont = other.thisfont;
-  std::swap(vbo, other.vbo);
-  std::swap(ibo, other.ibo);
-  std::swap(num_verts, other.num_verts);
+  std::swap(outline, other.outline);
+  std::swap(fill,    other.fill);
   std::swap(bounds_left, other.bounds_left);
   std::swap(bounds_bottom, other.bounds_bottom);
   std::swap(bounds_right, other.bounds_right);
@@ -59,19 +58,18 @@ string &string::operator=(string &&other) noexcept {
 
 string::~string() {
   /// Default destructor
-  glDeleteBuffers(1, &vbo);
-  glDeleteBuffers(1, &ibo);
+  outline.destroy();
+  fill.destroy();
 }
 
 void string::init(Vector3f const &position,
                   Quatf const &orientation,
                   double scale) {
   /// Initialise this string
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &ibo);
-
-  std::vector<Vector3<GLfloat>> vbo_data;
-  std::vector<GLuint>           ibo_data;
+  outline.init();
+  fill.init();
+  buffer_data data_outline;
+  buffer_data data_fill;
 
   Vector2f advance;
   Vector2f advance_max;
@@ -85,25 +83,25 @@ void string::init(Vector3f const &position,
   for(auto const &thischar : contents) {
     if(thischar == '\n') {                                                      // handle newlines
       lines.back().width = advance.x;
-      lines.back().index_to = static_cast<GLuint>(vbo_data.size());
+      lines.back().index_to = cast_if_required<GLuint>(data_outline.vbo.size());
       advance.y += line_height;
       advance.x = 0.0f;
       lines.emplace_back();
-      lines.back().index_from = static_cast<GLuint>(vbo_data.size());
+      lines.back().index_from = cast_if_required<GLuint>(data_outline.vbo.size());
     } else {
-      GLuint vbo_start = static_cast<GLuint>(vbo_data.size());
-      float const new_advance = thisfont.get_outline(thischar, vbo_data, ibo_data);
-      GLuint vbo_end = static_cast<GLuint>(vbo_data.size());
+      GLuint vbo_start = cast_if_required<GLuint>(data_outline.vbo.size());
+      float const new_advance = thisfont.get_outline(thischar, data_outline);
+      GLuint vbo_end = cast_if_required<GLuint>(data_outline.vbo.size());
       for(GLuint p = vbo_start; p != vbo_end; ++p) {                            // apply the previous advance to every point in this character
-        vbo_data[p].x += advance.x;
-        vbo_data[p].y -= advance.y;
+        data_outline.vbo[p].x += advance.x;
+        data_outline.vbo[p].y -= advance.y;
       }
       advance.x += new_advance;
     }
     advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
   }
   lines.back().width = advance.x;
-  lines.back().index_to = static_cast<GLuint>(vbo_data.size());
+  lines.back().index_to = cast_if_required<GLuint>(data_outline.vbo.size());
   float align_offset_width, align_offset_height;
   switch(align) {                                                               // horizontal alignment
   // left alignment
@@ -124,10 +122,10 @@ void string::init(Vector3f const &position,
       float const offset = (advance_max.x - this_line.width) / 2.0f;            // offset for centre align
       #ifdef DEBUG_VECTORFONTSTORM
         std::cout << "DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
-        std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " vbo_data.size() " << vbo_data.size() << std::endl;
+        std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
       for(GLuint p = this_line.index_from; p != this_line.index_to; ++p) {      // slide every point in this line by the offset
-        vbo_data[p].x += offset;
+        data_outline.vbo[p].x += offset;
       }
     }
     align_offset_width = advance_max.x * -0.5f;
@@ -143,10 +141,10 @@ void string::init(Vector3f const &position,
       float const offset = advance_max.x - this_line.width;                     // offset for right align
       #ifdef DEBUG_VECTORFONTSTORM
         std::cout << "DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
-        //std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " vbo_data.size() " << vbo_data.size() << std::endl;
+        //std::cout << "DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
       for(GLuint p = this_line.index_from; p != this_line.index_to; ++p) {      // slide every point in this line by the offset
-        vbo_data[p].x += offset;
+        data_outline.vbo[p].x += offset;
       }
     }
     align_offset_width = -advance_max.x;
@@ -178,7 +176,7 @@ void string::init(Vector3f const &position,
     break;
   }
 
-  for(auto &p : vbo_data) {
+  for(auto &p : data_outline.vbo) {
     p.x += align_offset_width;
     p.y += align_offset_height;
     p *= static_cast<float>(scale);                                             // scale the model
@@ -191,19 +189,12 @@ void string::init(Vector3f const &position,
   }
   #ifdef DEBUG_VECTORFONTSTORM
     std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" bounds " << get_bounds_2d() << std::endl;
+    std::cout << "VectorFontStorm: DEBUG: vbo size " << data_outline.vbo.size() << std::endl;
+    std::cout << "VectorFontStorm: DEBUG: ibo size " << data_outline.ibo.size() << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
 
-  num_verts = static_cast<GLuint>(ibo_data.size());
-  if(num_verts == 0) {
-    std::cout << "VectorFontStorm: WARNING: not uploading zero-sized buffer for string \"" << contents << "\"" << std::endl;
-    return;
-  }
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vbo_data.size() * sizeof(Vector3<GLfloat>), &vbo_data[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_data.size() * sizeof(GLuint), &ibo_data[0], GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  outline.upload(data_outline);
+  fill.upload(data_fill);
 }
 
 std::string const &string::get_contents() const {
@@ -241,21 +232,15 @@ Aabb3f string::get_bounds_3d() const {
   return Aabb3f(bounds_left, bounds_bottom, 0.0f, bounds_right, bounds_top, 0.0f);
 }
 
-void string::render() const {
-  /// Render this string
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // wireframe
+void string::render_outline() const {
+  /// Render this string in outline mode
+  outline.render(GL_LINES);
+}
+void string::render_fill() const {
+  /// Render this string in fill mode
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);                                  // wireframe
   //glDisable(GL_FOG);
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glVertexPointer(3, GL_FLOAT, 0, 0);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glDrawElements(GL_LINES, num_verts, GL_UNSIGNED_INT, 0);
-
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  fill.render(GL_TRIANGLES);
 }
 
 }

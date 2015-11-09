@@ -2,9 +2,8 @@
 #define VECTORFONTSTORM_STRING_H_INCLUDED
 
 #include <string>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "vmath.h"
+#include "buffer.h"
 
 namespace vectorfontstorm {
 
@@ -29,9 +28,8 @@ private:
 
   aligntype align = aligntype::CENTRE;
 
-  GLuint vbo = 0;                                                               // vertex buffer object for vertices
-  GLuint ibo = 0;                                                               // index buffer object
-  GLuint num_verts = 0;                                                         // number of vertices in the VBO
+  buffer outline;                                                               // the opengl buffer for the outline of the string
+  buffer fill;                                                                  // the opengl buffer for the polygonal fill of the string
 
   float bounds_left   = std::numeric_limits<float>::max();                      // outer-most points of the rendered model
   float bounds_bottom = std::numeric_limits<float>::max();
@@ -68,7 +66,8 @@ public:
   Aabb2f get_bounds_2d() const;
   Aabb3f get_bounds_3d() const;
 
-  void render() const;
+  void render_outline() const;
+  void render_fill() const;
 };
 
 }

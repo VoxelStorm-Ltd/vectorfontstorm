@@ -1,10 +1,7 @@
 #ifndef VECTORFONTSTORM_GLYPH_H_INCLUDED
 #define VECTORFONTSTORM_GLYPH_H_INCLUDED
 
-#include <vector>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include "vmath_forward_dec.h"
+#include "buffer_data.h"
 
 namespace vectorfontstorm {
 
@@ -15,8 +12,8 @@ class glyph {
 
   std::vector<contour> contours;
 
-  std::vector<Vector3<GLfloat>> vbo_data;                                       // cached point vbo data values for rapid output
-  std::vector<GLuint>           ibo_data;                                       // cached indices, need to be offset when outputting
+  buffer_data outline;                                                          // cached point vbo data values, indices need to be offset when outputting
+  buffer_data fill;                                                             // as above but for filled rendering rather than outlines
 
   float advance = 0.0f;                                                         // how far the next glyph needs to advance
 
@@ -27,10 +24,13 @@ public:
   glyph(char newchar, float newadvance);
   ~glyph();
 
-  void cache_outline();
+  void cache_buffer();
 
   float get_advance() const __attribute__((__pure__));
-  void get_outline(std::vector<Vector3<GLfloat>> &vbo_data_out, std::vector<GLuint> &ibo_data_out);
+
+  void get_buffer(buffer_data const &data_in, buffer_data &data_out);
+  void get_outline(                           buffer_data &data_out);
+  void get_fill(                              buffer_data &data_out);
 };
 
 }

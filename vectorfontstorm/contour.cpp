@@ -18,14 +18,13 @@ segment &contour::get_second_to_last_segment() {
   return segments[segments.size() - 1];
 }
 
-void contour::get_outline(std::vector<Vector3<GLfloat>> &vbo_data,
-                          std::vector<GLuint>           &ibo_data) const {
+void contour::get_outline(buffer_data &data_out) const {
   /// Output the outline for this contour to a buffer
   #ifdef DEBUG_VECTORFONTSTORM
     //std::cout << "VectorFontStorm: DEBUG:   Contour with " << segments.size() << " segments" << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
   for(segment const &s : segments) {
-    s.get_outline(vbo_data, ibo_data);
+    s.get_outline(data_out);
   }
 }
 
