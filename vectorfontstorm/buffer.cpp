@@ -15,10 +15,12 @@ buffer::~buffer() {
 }
 
 void buffer::init() {
+  /// Initialise the buffer
   glGenBuffers(1, &vbo);
   glGenBuffers(1, &ibo);
 }
 void buffer::destroy() {
+  /// Release this buffer's resources
   glDeleteBuffers(1, &vbo);
   glDeleteBuffers(1, &ibo);
   vbo = 0;
@@ -27,6 +29,7 @@ void buffer::destroy() {
 }
 
 void buffer::upload(buffer_data const &data) {
+  /// Upload this buffer to opengl
   num_verts = cast_if_required<GLuint>(data.ibo.size());
   if(num_verts == 0) {
     std::cout << "VectorFontStorm: WARNING: not uploading zero-sized buffer." << std::endl;
@@ -42,6 +45,11 @@ void buffer::upload(buffer_data const &data) {
 }
 
 void buffer::render(GLenum mode) const {
+  /// Render this buffer
+  if(num_verts == 0) {
+    return;
+  }
+
   glEnableClientState(GL_VERTEX_ARRAY);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glVertexPointer(3, GL_FLOAT, 0, 0);

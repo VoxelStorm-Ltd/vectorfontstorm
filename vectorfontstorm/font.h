@@ -29,7 +29,12 @@ public:
 
   float get_outline(         char const thischar, buffer_data &data_out);
   float get_fill(            char const thischar, buffer_data &data_out);
-  float get_outline_and_fill(char const thischar, buffer_data &data_out_outline, buffer_data &data_out_fill);
+  float get_back(            char const thischar, buffer_data &data_out);
+  float get_edge(            char const thischar, buffer_data &data_out);
+  float get_outline_and_fill(char const thischar, buffer_data &data_out_outline,
+                                                  buffer_data &data_out_fill,
+                                                  buffer_data &data_out_back,
+                                                  buffer_data &data_out_edge);
 
   glyph &load_glyph_from_freetype(char const thischar, std::unordered_map<char, glyph>::iterator &it);
 };

@@ -83,14 +83,35 @@ float font::get_fill(char const thischar,
   thisglyph.get_fill(data_out);
   return thisglyph.get_advance();
 }
+float font::get_back(char const thischar,
+                     buffer_data &data_out) {
+  /// Output the vertices for this character's fill to an indexed buffer, and return the advance
+  auto it = glyphs.find(thischar);
+  glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
+  thisglyph.get_back(data_out);
+  return thisglyph.get_advance();
+}
+float font::get_edge(char const thischar,
+                     buffer_data &data_out) {
+  /// Output the vertices for this character's fill to an indexed buffer, and return the advance
+  auto it = glyphs.find(thischar);
+  glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
+  thisglyph.get_edge(data_out);
+  return thisglyph.get_advance();
+}
 float font::get_outline_and_fill(char const thischar,
                                  buffer_data &data_out_outline,
-                                 buffer_data &data_out_fill) {
+                                 buffer_data &data_out_fill,
+                                 buffer_data &data_out_back,
+                                 buffer_data &data_out_edge) {
   /// Output the vertices for this character's fill and outlines to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
   glyph &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
+  thisglyph.correct_winding();
   thisglyph.get_outline(data_out_outline);
   thisglyph.get_fill(data_out_fill);
+  thisglyph.get_back(data_out_back);
+  thisglyph.get_edge(data_out_edge);
   return thisglyph.get_advance();
 }
 
@@ -106,10 +127,10 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
   flags |= FT_LOAD_RENDER;                                                      // freetype-gl default when using normal rendering
   FT_Load_Glyph(face, glyph_index, flags);
   FT_Outline const &outline = face->glyph->outline;
-  #ifdef DEBUG_VECTORFONTSTORM
+  #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     std::cout << "VectorFontStorm: DEBUG: outline.n_contours " << outline.n_contours << std::endl;
     std::cout << "VectorFontStorm: DEBUG: outline.n_points " << outline.n_points << std::endl;
-  #endif // DEBUG_VECTORFONTSTORM
+  #endif // DEBUG_VECTORFONTSTORM_DETAILED
   it = glyphs.emplace(thischar, glyph(thischar, static_cast<float>(static_cast<double>(face->glyph->metrics.horiAdvance) * scale))).first;
   glyph &thisglyph(it->second);
   for(int point_start = 0, c = 0; c < outline.n_contours; ++c) {                // can n_contours be contours?  I've no idea
@@ -117,16 +138,16 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
     contour &thiscontour(thisglyph.contours.back());
     thiscontour.segments.emplace_back();                                        // start the first segment
     int point_end = outline.contours[c];
-    #ifdef DEBUG_VECTORFONTSTORM
+    #ifdef DEBUG_VECTORFONTSTORM_DETAILED
       std::cout << "VectorFontStorm: DEBUG: contour " << c << " points " << point_start << "->" << point_end << std::endl;
-    #endif // DEBUG_VECTORFONTSTORM
+    #endif // DEBUG_VECTORFONTSTORM_DETAILED
     for(int p = point_start; p <= point_end; ++p) {                             // note: we're NOT stopping one short of the end point, last segment goes on top
       point::types const ptype = outline.tags[p] & 0b00000001 ? point::types::ON : (outline.tags[p] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
       thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[p].x) * scale, static_cast<double>(outline.points[p].y) * scale, ptype);
       point const thispoint(thiscontour.segments.back().points.back());         // copy, do not take a reference!
-      #ifdef DEBUG_VECTORFONTSTORM
+      #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "VectorFontStorm: DEBUG: processing " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() << std::endl;
-      #endif // DEBUG_VECTORFONTSTORM
+      #endif // DEBUG_VECTORFONTSTORM_DETAILED
       switch(ptype) {
       case point::types::ON:
         if(thiscontour.segments.back().points.size() == 1) {                    // is this the first point of the segment?
@@ -136,21 +157,21 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
           switch(prevpoint.type) {
           case point::types::ON:
             thiscontour.segments.back().type = segment::types::LINE;            // this was a straight line
-            #ifdef DEBUG_VECTORFONTSTORM
+            #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a straight line at " << prevpoint.coords << std::endl;
-            #endif // DEBUG_VECTORFONTSTORM
+            #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
           case point::types::OFF_SECONDORDER:
             thiscontour.segments.back().type = segment::types::CONIC;           // this was a conic bezier curve
-            #ifdef DEBUG_VECTORFONTSTORM
+            #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a conic bezier at " << prevpoint.coords << std::endl;
-            #endif // DEBUG_VECTORFONTSTORM
+            #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
           case point::types::OFF_THIRDORDER:
             thiscontour.segments.back().type = segment::types::CUBIC;           // this was a cubic bezier curve
-            #ifdef DEBUG_VECTORFONTSTORM
+            #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a cubic bezier at " << prevpoint.coords << std::endl;
-            #endif // DEBUG_VECTORFONTSTORM
+            #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
           case point::types::VIRTUAL:
             #ifndef NDEBUG
@@ -176,9 +197,9 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
           point &prevpoint(thiscontour.segments.back().get_second_to_last_point()); // get the second-to-last
           switch(prevpoint.type) {
           case point::types::ON:                                                // this is the first conic control point of this segment
-            #ifdef DEBUG_VECTORFONTSTORM
+            #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was the first conic control point" << std::endl;
-            #endif // DEBUG_VECTORFONTSTORM
+            #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
           case point::types::OFF_SECONDORDER:                                   // this is a continuing conic bezier
             {
@@ -191,9 +212,9 @@ glyph &font::load_glyph_from_freetype(char const thischar, std::unordered_map<ch
               segment &lastsegment(thiscontour.get_second_to_last_segment());   // the one before this one we just pushed
               lastsegment.points.pop_back();                                    // remove newest point from last segment (we've moved it to the next seg)
               lastsegment.points.emplace_back(midpoint, point::types::VIRTUAL); // and stitch the gap with the virtual point
-              #ifdef DEBUG_VECTORFONTSTORM
+              #ifdef DEBUG_VECTORFONTSTORM_DETAILED
                 std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a continuing cubic bezier" << std::endl;
-              #endif // DEBUG_VECTORFONTSTORM
+              #endif // DEBUG_VECTORFONTSTORM_DETAILED
             }
             break;
           case point::types::OFF_THIRDORDER:                                    // conics shouldn't follow cubics!

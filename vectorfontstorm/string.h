@@ -29,7 +29,9 @@ private:
   aligntype align = aligntype::CENTRE;
 
   buffer outline;                                                               // the opengl buffer for the outline of the string
-  buffer fill;                                                                  // the opengl buffer for the polygonal fill of the string
+  buffer fill;                                                                  // the opengl buffer for the polygonal front fill of the string
+  buffer back;                                                                  // the opengl buffer for the polygonal back fill of the string
+  buffer edge;                                                                  // the opengl buffer for the polygonal extruded edge of the string
 
   float bounds_left   = std::numeric_limits<float>::max();                      // outer-most points of the rendered model
   float bounds_bottom = std::numeric_limits<float>::max();
@@ -41,7 +43,8 @@ public:
          vectorfontstorm::font &newfont,
          Vector3f const &position = {0.0f, 0.0f, 0.0f},
          Quatf const &orientation = {1.0f, 0.0f, 0.0f, 0.0f},
-         double scale = 1.0,
+         float scale = 1.0f,
+         float depth = 1.0f,
          aligntype alignment = aligntype::CENTRE);
   string(string const &other) = delete;                                         // disallow copy
   string &operator=(string const &other) = delete;
@@ -50,7 +53,7 @@ public:
   ~string();
 
 private:
-  void init(Vector3f const &position, Quatf const &orientation, double scale);
+  void init(Vector3f const &position, Quatf const &orientation, float scale, float depth);
 
 public:
   std::string const &get_contents() const __attribute__((__unused__, __const__));
@@ -68,6 +71,8 @@ public:
 
   void render_outline() const;
   void render_fill() const;
+  void render_back() const;
+  void render_edge() const;
 };
 
 }
