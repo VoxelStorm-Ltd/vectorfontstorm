@@ -170,22 +170,22 @@ private:
 
   // Decision-making about when to Fill hole.
   // Contributed by ToolmakerSteve2
-  bool LargeHole_DontFill(const Node *node) const;
-  bool AngleExceeds90Degrees(const Point *origin, const Point *pa, const Point *pb) const;
-  bool AngleExceedsPlus90DegreesOrIsNegative(const Point *origin, const Point *pa, const Point *pb) const;
-  float Angle(const Point *origin, const Point *pa, const Point *pb) const;
+  bool LargeHole_DontFill(const Node *node) const __attribute__((__pure__));
+  bool AngleExceeds90Degrees(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
+  bool AngleExceedsPlus90DegreesOrIsNegative(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
+  float Angle(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
 
   /**
    *
    * @param node - middle node
    * @return the angle between 3 front nodes
    */
-  float HoleAngle(const Node &node) const;
+  float HoleAngle(const Node &node) const __attribute__((__pure__));
 
   /**
    * The basin angle is decided against the horizontal line [1,0]
    */
-  float BasinAngle(const Node &node) const;
+  float BasinAngle(const Node &node) const __attribute__((__pure__));
 
   /**
    * Fills a basin that has formed on the Advancing Front to the right
