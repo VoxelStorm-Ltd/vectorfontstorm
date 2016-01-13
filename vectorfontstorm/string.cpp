@@ -29,7 +29,7 @@ string::string(string &&other) noexcept
     align(other.align) {
   /// Move constructor
   #ifndef NDEBUG
-    std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
+    //std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
   #endif // NDEBUG
   align = other.align;
   std::swap(contents, other.contents);
@@ -46,7 +46,7 @@ string::string(string &&other) noexcept
 string &string::operator=(string &&other) noexcept {
   /// Move assignment constructor
   #ifndef NDEBUG
-    std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" in assignment - this is expensive." << std::endl;
+    //std::cout << "VectorFontStorm: WARNING: moving string \"" << other.contents << "\" in assignment - this is expensive." << std::endl;
   #endif // NDEBUG
   align = other.align;
   std::swap(contents, other.contents);
