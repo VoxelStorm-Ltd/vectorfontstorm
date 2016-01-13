@@ -90,7 +90,7 @@ bool InScanArea(Point& pa, Point& pb, Point& pc, Point& pd)
   float bdxady = bdx * ady;
   float oabd = adxbdy - bdxady;
 
-  if (oabd <= EPSILON) {
+  if(oabd <= EPSILON) {
     return false;
   }
 
@@ -101,7 +101,7 @@ bool InScanArea(Point& pa, Point& pb, Point& pc, Point& pd)
   float adxcdy = adx * cdy;
   float ocad = cdxady - adxcdy;
 
-  if (ocad <= EPSILON) {
+  if(ocad <= EPSILON) {
     return false;
   }
 

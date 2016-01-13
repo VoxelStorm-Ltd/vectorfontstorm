@@ -43,16 +43,16 @@ Node* AdvancingFront::LocateNode(float x)
 {
   Node* node = search_node_;
 
-  if (x < node->value) {
-    while ((node = node->prev) != nullptr) {
-      if (x >= node->value) {
+  if(x < node->value) {
+    while((node = node->prev) != nullptr) {
+      if(x >= node->value) {
         search_node_ = node;
         return node;
       }
     }
   } else {
-    while ((node = node->next) != nullptr) {
-      if (x < node->value) {
+    while((node = node->next) != nullptr) {
+      if(x < node->value) {
         search_node_ = node->prev;
         return node->prev;
       }
@@ -74,10 +74,10 @@ Node* AdvancingFront::LocatePoint(const Point* point)
   Node* node = FindSearchNode(px);
   const float nx = node->point->x;
 
-  if (px == nx) {
-    if (point != node->point) {
+  if(px == nx) {
+    if(point != node->point) {
       // We might have two nodes with same x value for a short time
-      if (point == node->prev->point) {
+      if(point == node->prev->point) {
         node = node->prev;
       } else if (point == node->next->point) {
         node = node->next;
@@ -85,15 +85,15 @@ Node* AdvancingFront::LocatePoint(const Point* point)
         assert(0);
       }
     }
-  } else if (px < nx) {
-    while ((node = node->prev) != nullptr) {
+  } else if(px < nx) {
+    while((node = node->prev) != nullptr) {
       if (point == node->point) {
         break;
       }
     }
   } else {
-    while ((node = node->next) != nullptr) {
-      if (point == node->point)
+    while((node = node->next) != nullptr) {
+      if(point == node->point)
         break;
     }
   }
