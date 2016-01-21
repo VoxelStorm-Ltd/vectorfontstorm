@@ -73,7 +73,7 @@ public:
   /// Locate insertion point along advancing front
   Node *LocateNode(float x);
 
-  Node *LocatePoint(const Point *point);
+  Node *LocatePoint(Point const *point);
 
 private:
   Node *head_, *tail_, *search_node_;

@@ -34,7 +34,7 @@
 
 namespace p2t {
 
-SweepContext::SweepContext(const std::vector<Point *> &polyline) : points_(polyline),
+SweepContext::SweepContext(std::vector<Point*> const &polyline) : points_(polyline),
   front_(0),
   head_(0),
   tail_(0),
@@ -44,7 +44,7 @@ SweepContext::SweepContext(const std::vector<Point *> &polyline) : points_(polyl
   InitEdges(points_);
 }
 
-void SweepContext::AddHole(const std::vector<Point *> &polyline) {
+void SweepContext::AddHole(std::vector<Point*> const &polyline) {
   InitEdges(polyline);
   for(auto const &it : polyline) {
     points_.emplace_back(it);
@@ -55,11 +55,11 @@ void SweepContext::AddPoint(Point *point) {
   points_.emplace_back(point);
 }
 
-std::vector<Triangle *> &SweepContext::GetTriangles() {
+std::vector<Triangle*> &SweepContext::GetTriangles() {
   return triangles_;
 }
 
-std::list<Triangle *> &SweepContext::GetMap() {
+std::list<Triangle*> &SweepContext::GetMap() {
   return map_;
 }
 
@@ -94,7 +94,7 @@ void SweepContext::InitTriangulation() {
 
 }
 
-void SweepContext::InitEdges(const std::vector<Point *> &polyline) {
+void SweepContext::InitEdges(std::vector<Point*> const &polyline) {
   size_t num_points = polyline.size();
   for(size_t i = 0; i < num_points; i++) {
     size_t j = i < num_points - 1 ? i + 1 : 0;
@@ -115,12 +115,12 @@ void SweepContext::AddToMap(Triangle *triangle) {
   map_.emplace_back(triangle);
 }
 
-Node &SweepContext::LocateNode(const Point &point) {
+Node &SweepContext::LocateNode(Point const &point) {
   // TODO implement search tree
   return *front_->LocateNode(point.x);
 }
 
-void SweepContext::CreateAdvancingFront(const std::vector<Node *> &nodes) {
+void SweepContext::CreateAdvancingFront(std::vector<Node*> const &nodes) {
 
   (void) nodes;
   // Initial triangle
@@ -161,7 +161,7 @@ void SweepContext::RemoveFromMap(Triangle *triangle) {
 }
 
 void SweepContext::MeshClean(Triangle &triangle) {
-  std::vector<Triangle *> triangles;
+  std::vector<Triangle*> triangles;
   triangles.emplace_back(&triangle);
 
   while(!triangles.empty()) {

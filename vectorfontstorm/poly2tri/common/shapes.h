@@ -54,7 +54,7 @@ struct Point {
   }
 
   /// The edges this point constitutes an upper ending point
-  std::vector<Edge *> edge_list;
+  std::vector<Edge*> edge_list;
 
   /// Construct using coordinates.
   Point(float new_x, float new_y) : x(new_x), y(new_y) {}
@@ -79,13 +79,13 @@ struct Point {
   }
 
   /// Add a point to this point.
-  void operator +=(const Point &v) {
+  void operator +=(Point const &v) {
     x += v.x;
     y += v.y;
   }
 
   /// Subtract a point from this point.
-  void operator -=(const Point &v) {
+  void operator -=(Point const &v) {
     x -= v.x;
     y -= v.y;
   }
@@ -103,7 +103,7 @@ struct Point {
 
   /// Convert this point into a unit point. Returns the Length.
   float Normalize() {
-    const float len = Length();
+    float const len = Length();
     x /= len;
     y /= len;
     return len;
@@ -150,9 +150,9 @@ public:
   bool delaunay_edge[3];
 
   Point *GetPoint(int index);
-  Point *PointCW(const Point &point) __attribute__((__pure__));
-  Point *PointCCW(const Point &point) __attribute__((__pure__));
-  Point *OppositePoint(Triangle &t, const Point &p) __attribute__((__pure__));
+  Point *PointCW(Point const &point) __attribute__((__pure__));
+  Point *PointCCW(Point const &point) __attribute__((__pure__));
+  Point *OppositePoint(Triangle &t, Point const &p) __attribute__((__pure__));
 
   Triangle *GetNeighbor(int index);
   void MarkNeighbor(Point *p1, Point *p2, Triangle *t);
@@ -162,37 +162,37 @@ public:
   void MarkConstrainedEdge(Edge &edge);
   void MarkConstrainedEdge(Point *p, Point *q);
 
-  int Index(const Point *p) __attribute__((__pure__));
-  int EdgeIndex(const Point *p1, const Point *p2) __attribute__((__pure__));
+  int Index(Point const *p) __attribute__((__pure__));
+  int EdgeIndex(Point const *p1, Point const *p2) __attribute__((__pure__));
 
-  Triangle *NeighborCW(const Point &point) __attribute__((__pure__));
-  Triangle *NeighborCCW(const Point &point) __attribute__((__pure__));
-  bool GetConstrainedEdgeCCW(const Point &p) __attribute__((__pure__));
-  bool GetConstrainedEdgeCW(const Point &p) __attribute__((__pure__));
-  void SetConstrainedEdgeCCW(const Point &p, bool ce);
-  void SetConstrainedEdgeCW(const Point &p, bool ce);
-  bool GetDelunayEdgeCCW(const Point &p) __attribute__((__pure__));
-  bool GetDelunayEdgeCW(const Point &p) __attribute__((__pure__));
-  void SetDelunayEdgeCCW(const Point &p, bool e);
-  void SetDelunayEdgeCW(const Point &p, bool e);
+  Triangle *NeighborCW(Point const &point) __attribute__((__pure__));
+  Triangle *NeighborCCW(Point const &point) __attribute__((__pure__));
+  bool GetConstrainedEdgeCCW(Point const &p) __attribute__((__pure__));
+  bool GetConstrainedEdgeCW(Point const &p) __attribute__((__pure__));
+  void SetConstrainedEdgeCCW(Point const &p, bool ce);
+  void SetConstrainedEdgeCW(Point const &p, bool ce);
+  bool GetDelunayEdgeCCW(Point const &p) __attribute__((__pure__));
+  bool GetDelunayEdgeCW(Point const &p) __attribute__((__pure__));
+  void SetDelunayEdgeCCW(Point const &p, bool e);
+  void SetDelunayEdgeCW(Point const &p, bool e);
 
-  bool Contains(const Point *p);
-  bool Contains(const Edge &e);
-  bool Contains(const Point *p, const Point *q);
+  bool Contains(Point const *p);
+  bool Contains(Edge const &e);
+  bool Contains(Point const *p, Point const *q);
   void Legalize(Point &point);
   void Legalize(Point &opoint, Point &npoint);
   /**
    * Clears all references to all other triangles and points
    */
   void Clear();
-  void ClearNeighbor(const Triangle *triangle);
+  void ClearNeighbor(Triangle const *triangle);
   void ClearNeighbors();
   void ClearDelunayEdges();
 
   inline bool IsInterior();
   inline void IsInterior(bool b);
 
-  Triangle &NeighborAcross(const Point &opoint) __attribute__((__pure__));
+  Triangle &NeighborAcross(Point const &opoint) __attribute__((__pure__));
 
   void DebugPrint();
 
@@ -206,7 +206,7 @@ public:
   bool interior_;
 };
 
-inline bool cmp(const Point *a, const Point *b) {
+inline bool cmp(Point const *a, Point const *b) {
   if(a->y < b->y) {
     return true;
   } else if(a->y == b->y) {
@@ -219,47 +219,47 @@ inline bool cmp(const Point *a, const Point *b) {
 }
 
 /// Add two points_ component-wise.
-inline Point operator +(const Point &a, const Point &b) {
+inline Point operator +(Point const &a, Point const &b) {
   return Point(a.x + b.x, a.y + b.y);
 }
 
 /// Subtract two points_ component-wise.
-inline Point operator -(const Point &a, const Point &b) {
+inline Point operator -(Point const &a, Point const &b) {
   return Point(a.x - b.x, a.y - b.y);
 }
 
 /// Multiply point by scalar
-inline Point operator *(float s, const Point &a) {
+inline Point operator *(float s, Point const &a) {
   return Point(s * a.x, s * a.y);
 }
 
-inline bool operator ==(const Point &a, const Point &b) {
+inline bool operator ==(Point const &a, Point const &b) {
   return a.x == b.x && a.y == b.y;
 }
 
-inline bool operator !=(const Point &a, const Point &b) {
+inline bool operator !=(Point const &a, Point const &b) {
   return !(a.x == b.x) && !(a.y == b.y);
 }
 
 /// Peform the dot product on two vectors.
-inline float Dot(const Point &a, const Point &b) {
+inline float Dot(Point const &a, Point const &b) {
   return a.x * b.x + a.y * b.y;
 }
 
 /// Perform the cross product on two vectors. In 2D this produces a scalar.
-inline float Cross(const Point &a, const Point &b) {
+inline float Cross(Point const &a, Point const &b) {
   return a.x * b.y - a.y * b.x;
 }
 
 /// Perform the cross product on a point and a scalar. In 2D this produces
 /// a point.
-inline Point Cross(const Point &a, float s) {
+inline Point Cross(Point const &a, float s) {
   return Point(s * a.y, -s * a.x);
 }
 
 /// Perform the cross product on a scalar and a point. In 2D this produces
 /// a point.
-inline Point Cross(float s, const Point &a) {
+inline Point Cross(float s, Point const &a) {
   return Point(-s * a.y, s * a.x);
 }
 
@@ -271,15 +271,15 @@ inline Triangle *Triangle::GetNeighbor(int index) {
   return neighbors_[index];
 }
 
-inline bool Triangle::Contains(const Point *p) {
+inline bool Triangle::Contains(Point const *p) {
   return p == points_[0] || p == points_[1] || p == points_[2];
 }
 
-inline bool Triangle::Contains(const Edge &e) {
+inline bool Triangle::Contains(Edge const &e) {
   return Contains(e.p) && Contains(e.q);
 }
 
-inline bool Triangle::Contains(const Point *p, const Point *q) {
+inline bool Triangle::Contains(Point const *p, Point const *q) {
   return Contains(p) && Contains(q);
 }
 

@@ -154,7 +154,7 @@ void Sweep::EdgeEvent(SweepContext &tcx, Point &ep, Point &eq, Triangle *triangl
 }
 
 bool Sweep::IsEdgeSideOfTriangle(Triangle &triangle, Point &ep, Point &eq) {
-  const int index = triangle.EdgeIndex(&ep, &eq);
+  int const index = triangle.EdgeIndex(&ep, &eq);
 
   if(index != -1) {
     triangle.MarkConstrainedEdge(index);
@@ -237,7 +237,7 @@ void Sweep::FillAdvancingFront(SweepContext &tcx, Node &n) {
 
   // Fill right basins
   if(n.next && n.next->next) {
-    const float angle = BasinAngle(n);
+    float const angle = BasinAngle(n);
     if(angle < PI_3div4) {
       FillBasin(tcx, n);
     }
@@ -245,7 +245,7 @@ void Sweep::FillAdvancingFront(SweepContext &tcx, Node &n) {
 }
 
 // True if HoleAngle exceeds 90 degrees.
-bool Sweep::LargeHole_DontFill(const Node *node) const {
+bool Sweep::LargeHole_DontFill(Node const *node) const {
 
   const Node *nextNode = node->next;
   const Node *prevNode = node->prev;
@@ -269,17 +269,17 @@ bool Sweep::LargeHole_DontFill(const Node *node) const {
   return true;
 }
 
-bool Sweep::AngleExceeds90Degrees(const Point *origin, const Point *pa, const Point *pb) const {
-  const float angle = Angle(origin, pa, pb);
+bool Sweep::AngleExceeds90Degrees(Point const *origin, Point const *pa, Point const *pb) const {
+  float const angle = Angle(origin, pa, pb);
   return ((angle > PI_div2) || (angle < -PI_div2));
 }
 
-bool Sweep::AngleExceedsPlus90DegreesOrIsNegative(const Point *origin, const Point *pa, const Point *pb) const {
-  const float angle = Angle(origin, pa, pb);
+bool Sweep::AngleExceedsPlus90DegreesOrIsNegative(Point const *origin, Point const *pa, Point const *pb) const {
+  float const angle = Angle(origin, pa, pb);
   return (angle > PI_div2) || (angle < 0);
 }
 
-float Sweep::Angle(const Point *origin, const Point *pa, const Point *pb) const {
+float Sweep::Angle(Point const *origin, Point const *pa, Point const *pb) const {
   /* Complex plane
    * ab = cosA +i*sinA
    * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
@@ -288,24 +288,24 @@ float Sweep::Angle(const Point *origin, const Point *pa, const Point *pb) const 
    * Where x = ax*bx + ay*by
    *       y = ax*by - ay*bx
    */
-  const float px = origin->x;
-  const float py = origin->y;
-  const float ax = pa->x - px;
-  const float ay = pa->y - py;
-  const float bx = pb->x - px;
-  const float by = pb->y - py;
-  const float x = ax * by - ay * bx;
-  const float y = ax * bx + ay * by;
+  float const px = origin->x;
+  float const py = origin->y;
+  float const ax = pa->x - px;
+  float const ay = pa->y - py;
+  float const bx = pb->x - px;
+  float const by = pb->y - py;
+  float const x = ax * by - ay * bx;
+  float const y = ax * bx + ay * by;
   return std::atan2(x, y);
 }
 
-float Sweep::BasinAngle(const Node &node) const {
-  const float ax = node.point->x - node.next->next->point->x;
-  const float ay = node.point->y - node.next->next->point->y;
+float Sweep::BasinAngle(Node const &node) const {
+  float const ax = node.point->x - node.next->next->point->x;
+  float const ay = node.point->y - node.next->next->point->y;
   return std::atan2(ay, ax);
 }
 
-float Sweep::HoleAngle(const Node &node) const {
+float Sweep::HoleAngle(Node const &node) const {
   /* Complex plane
    * ab = cosA +i*sinA
    * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
@@ -314,10 +314,10 @@ float Sweep::HoleAngle(const Node &node) const {
    * Where x = ax*bx + ay*by
    *       y = ax*by - ay*bx
    */
-  const float ax = node.next->point->x - node.point->x;
-  const float ay = node.next->point->y - node.point->y;
-  const float bx = node.prev->point->x - node.point->x;
-  const float by = node.prev->point->y - node.point->y;
+  float const ax = node.next->point->x - node.point->x;
+  float const ay = node.next->point->y - node.point->y;
+  float const bx = node.prev->point->x - node.point->x;
+  float const by = node.prev->point->y - node.point->y;
   return std::atan2(ax * by - ay * bx, ax * bx + ay * by);
 }
 
@@ -383,39 +383,39 @@ bool Sweep::Legalize(SweepContext &tcx, Triangle &t) {
   return false;
 }
 
-bool Sweep::Incircle(const Point &pa, const Point &pb, const Point &pc, const Point &pd) const {
-  const float adx = pa.x - pd.x;
-  const float ady = pa.y - pd.y;
-  const float bdx = pb.x - pd.x;
-  const float bdy = pb.y - pd.y;
+bool Sweep::Incircle(Point const &pa, Point const &pb, Point const &pc, Point const &pd) const {
+  float const adx = pa.x - pd.x;
+  float const ady = pa.y - pd.y;
+  float const bdx = pb.x - pd.x;
+  float const bdy = pb.y - pd.y;
 
-  const float adxbdy = adx * bdy;
-  const float bdxady = bdx * ady;
-  const float oabd = adxbdy - bdxady;
+  float const adxbdy = adx * bdy;
+  float const bdxady = bdx * ady;
+  float const oabd = adxbdy - bdxady;
 
   if(oabd <= 0) {
     return false;
   }
 
-  const float cdx = pc.x - pd.x;
-  const float cdy = pc.y - pd.y;
+  float const cdx = pc.x - pd.x;
+  float const cdy = pc.y - pd.y;
 
-  const float cdxady = cdx * ady;
-  const float adxcdy = adx * cdy;
-  const float ocad = cdxady - adxcdy;
+  float const cdxady = cdx * ady;
+  float const adxcdy = adx * cdy;
+  float const ocad = cdxady - adxcdy;
 
   if(ocad <= 0) {
     return false;
   }
 
-  const float bdxcdy = bdx * cdy;
-  const float cdxbdy = cdx * bdy;
+  float const bdxcdy = bdx * cdy;
+  float const cdxbdy = cdx * bdy;
 
-  const float alift = adx * adx + ady * ady;
-  const float blift = bdx * bdx + bdy * bdy;
-  const float clift = cdx * cdx + cdy * cdy;
+  float const alift = adx * adx + ady * ady;
+  float const blift = bdx * bdx + bdy * bdy;
+  float const clift = cdx * cdx + cdy * cdy;
 
-  const float det = alift * (bdxcdy - cdxbdy) + blift * ocad + clift * oabd;
+  float const det = alift * (bdxcdy - cdxbdy) + blift * ocad + clift * oabd;
 
   return det > 0;
 }

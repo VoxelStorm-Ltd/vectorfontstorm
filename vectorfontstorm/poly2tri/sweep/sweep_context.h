@@ -40,7 +40,7 @@ namespace p2t {
 
 // Inital triangle factor, seed triangle will extend 30% of
 // PointSet width to both left and right.
-const float kAlpha = 0.3f;
+float constexpr const kAlpha = 0.3f;
 
 struct Point;
 class Triangle;
@@ -52,7 +52,7 @@ class SweepContext {
 public:
 
   /// Constructor
-  SweepContext(const std::vector<Point *> &polyline);
+  SweepContext(std::vector<Point*> const &polyline);
   /// Destructor
   ~SweepContext();
 
@@ -66,11 +66,11 @@ public:
 
   size_t point_count() const;
 
-  Node &LocateNode(const Point &point);
+  Node &LocateNode(Point const &point);
 
   void RemoveNode(Node *node);
 
-  void CreateAdvancingFront(const std::vector<Node *> &nodes);
+  void CreateAdvancingFront(std::vector<Node*> const &nodes);
 
   /// Try to map a node to all sides of this triangle that don't have a neighbor
   void MapTriangleToNodes(Triangle &t);
@@ -83,7 +83,7 @@ public:
 
   void RemoveFromMap(Triangle *triangle);
 
-  void AddHole(const std::vector<Point *> &polyline);
+  void AddHole(std::vector<Point*> const &polyline);
 
   void AddPoint(Point *point);
 
@@ -91,10 +91,10 @@ public:
 
   void MeshClean(Triangle &triangle);
 
-  std::vector<Triangle *> &GetTriangles() __attribute__((__const__));
-  std::list<Triangle *> &GetMap() __attribute__((__const__));
+  std::vector<Triangle*> &GetTriangles() __attribute__((__const__));
+  std::list<Triangle*> &GetMap() __attribute__((__const__));
 
-  std::vector<Edge *> edge_list;
+  std::vector<Edge*> edge_list;
 
   struct Basin {
     Node *left_node;
@@ -130,9 +130,9 @@ public:
 
   friend class Sweep;
 
-  std::vector<Triangle *> triangles_;
-  std::list<Triangle *> map_;
-  std::vector<Point *> points_;
+  std::vector<Triangle*> triangles_;
+  std::list<Triangle*> map_;
+  std::vector<Point*> points_;
 
   // Advancing front
   AdvancingFront *front_;
@@ -144,7 +144,7 @@ public:
   Node *af_head_, *af_middle_, *af_tail_;
 
   void InitTriangulation();
-  void InitEdges(const std::vector<Point *> &polyline);
+  void InitEdges(std::vector<Point*> const &polyline);
 
 };
 

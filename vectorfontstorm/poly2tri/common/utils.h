@@ -45,14 +45,14 @@
 
 namespace p2t {
 
-const float PI_3div4 = 3.0f * static_cast<float>(M_PI) / 4.0f;
-const float PI_div2 = 1.57079632679489661923f;
-const float EPSILON = 1e-12f;
+float constexpr const PI_3div4 = 3.0f * static_cast<float>(M_PI) / 4.0f;
+float constexpr const PI_div2 = 1.57079632679489661923f;
+float constexpr const EPSILON = 1e-12f;
 
-enum Orientation { CW, CCW, COLLINEAR };
+enum Orientation {CW, CCW, COLLINEAR};
 
-Orientation Orient2d(const Point &pa, const Point &pb, const Point &pc) __attribute__((__pure__));
-bool InScanArea(const Point &pa, const Point &pb, const Point &pc, const Point &pd) __attribute__((__pure__));
+Orientation Orient2d(Point const &pa, Point const &pb, Point const &pc) __attribute__((__pure__));
+bool InScanArea(Point const &pa, Point const &pb, Point const &pc, Point const &pd) __attribute__((__pure__));
 
 /**
  * Forumla to calculate signed area<br>
@@ -64,7 +64,7 @@ bool InScanArea(const Point &pa, const Point &pb, const Point &pc, const Point &
  *              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
  * </pre>
  */
-Orientation Orient2d(const Point &pa, const Point &pb, const Point &pc) {
+Orientation Orient2d(Point const &pa, Point const &pb, Point const &pc) {
   float detleft = (pa.x - pc.x) * (pb.y - pc.y);
   float detright = (pa.y - pc.y) * (pb.x - pc.x);
   float val = detleft - detright;
@@ -77,7 +77,7 @@ Orientation Orient2d(const Point &pa, const Point &pb, const Point &pc) {
 }
 
 /*
-bool InScanArea(Point& pa, Point& pb, Point& pc, Point& pd)
+bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd)
 {
   float pdx = pd.x;
   float pdy = pd.y;
@@ -110,7 +110,7 @@ bool InScanArea(Point& pa, Point& pb, Point& pc, Point& pd)
 
 */
 
-bool InScanArea(const Point &pa, const Point &pb, const Point &pc, const Point &pd) {
+bool InScanArea(Point const &pa, Point const &pb, Point const &pc, Point const &pd) {
   float oadb = (pa.x - pb.x) * (pd.y - pb.y) - (pd.x - pb.x) * (pa.y - pb.y);
   if(oadb >= -EPSILON) {
     return false;

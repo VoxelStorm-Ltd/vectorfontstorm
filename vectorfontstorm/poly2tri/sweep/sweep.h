@@ -141,7 +141,7 @@ private:
    * @param d - point opposite a
    * @return true if d is inside circle, false if on circle edge
    */
-  bool Incircle(const Point &pa, const Point &pb, const Point &pc, const Point &pd) const __attribute__((__pure__));
+  bool Incircle(Point const &pa, Point const &pb, Point const &pc, Point const &pd) const __attribute__((__pure__));
 
   /**
    * Rotates a triangle pair one vertex CW
@@ -170,22 +170,22 @@ private:
 
   // Decision-making about when to Fill hole.
   // Contributed by ToolmakerSteve2
-  bool LargeHole_DontFill(const Node *node) const __attribute__((__pure__));
-  bool AngleExceeds90Degrees(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
-  bool AngleExceedsPlus90DegreesOrIsNegative(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
-  float Angle(const Point *origin, const Point *pa, const Point *pb) const __attribute__((__pure__));
+  bool LargeHole_DontFill(Node const *node) const __attribute__((__pure__));
+  bool AngleExceeds90Degrees(Point const *origin, Point const *pa, Point const *pb) const __attribute__((__pure__));
+  bool AngleExceedsPlus90DegreesOrIsNegative(Point const *origin, Point const *pa, Point const *pb) const __attribute__((__pure__));
+  float Angle(Point const *origin, Point const *pa, Point const *pb) const __attribute__((__pure__));
 
   /**
    *
    * @param node - middle node
    * @return the angle between 3 front nodes
    */
-  float HoleAngle(const Node &node) const __attribute__((__pure__));
+  float HoleAngle(Node const &node) const __attribute__((__pure__));
 
   /**
    * The basin angle is decided against the horizontal line [1,0]
    */
-  float BasinAngle(const Node &node) const __attribute__((__pure__));
+  float BasinAngle(Node const &node) const __attribute__((__pure__));
 
   /**
    * Fills a basin that has formed on the Advancing Front to the right
@@ -236,7 +236,7 @@ private:
    * intersecting the edge. So decide which to contiune with and legalize the other
    *
    * @param tcx
-   * @param o - should be the result of an orient2d( eq, op, ep )
+   * @param o - should be the result of an orient2d(eq, op, ep)
    * @param t - triangle 1
    * @param ot - triangle 2
    * @param p - a point shared by both triangles
@@ -275,7 +275,7 @@ private:
 
   void FinalizationPolygon(SweepContext &tcx);
 
-  std::vector<Node *> nodes_;
+  std::vector<Node*> nodes_;
 };
 
 }
