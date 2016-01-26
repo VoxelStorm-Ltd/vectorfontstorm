@@ -8,13 +8,24 @@
 
 namespace vectorfontstorm {
 
+template<typename T>
 struct buffer_data {
-  std::vector<Vector3<GLfloat>> vbo;                                            // point vbo data values
-  std::vector<GLuint>           ibo;                                            // indices
+  std::vector<T>      vbo;                                                      // point vbo data values
+  std::vector<GLuint> ibo;                                                      // indices
 
   buffer_data();
   ~buffer_data();
 };
+
+template<typename T>
+buffer_data<T>::buffer_data() {
+  /// Default constructor
+}
+
+template<typename T>
+buffer_data<T>::~buffer_data() {
+  /// Default destructor
+}
 
 }
 

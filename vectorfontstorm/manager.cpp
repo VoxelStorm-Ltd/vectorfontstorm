@@ -2,11 +2,13 @@
 
 namespace vectorfontstorm {
 
-manager::manager() {
+template<typename T>
+manager<T>::manager() {
   /// Default constructor
 }
 
-manager::~manager() {
+template<typename T>
+manager<T>::~manager() {
   /// Default destructor
 }
 

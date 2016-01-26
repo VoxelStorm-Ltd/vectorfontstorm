@@ -32,15 +32,13 @@
 
 namespace p2t {
 
-AdvancingFront::AdvancingFront(Node &head, Node &tail)
-{
+AdvancingFront::AdvancingFront(Node &head, Node &tail) {
   head_ = &head;
   tail_ = &tail;
   search_node_ = &head;
 }
 
-Node *AdvancingFront::LocateNode(float x)
-{
+Node *AdvancingFront::LocateNode(float x) {
   Node *node = search_node_;
 
   if(x < node->value) {
@@ -61,15 +59,13 @@ Node *AdvancingFront::LocateNode(float x)
   return nullptr;
 }
 
-Node *AdvancingFront::FindSearchNode(float x)
-{
+Node *AdvancingFront::FindSearchNode(float x) {
   (void)x; // suppress compiler warnings "unused parameter 'x'"
   // TODO: implement BST index
   return search_node_;
 }
 
-Node *AdvancingFront::LocatePoint(Point const *point)
-{
+Node *AdvancingFront::LocatePoint(Point const *point) {
   float const px = point->x;
   Node *node = FindSearchNode(px);
   float const nx = node->point->x;
@@ -79,7 +75,7 @@ Node *AdvancingFront::LocatePoint(Point const *point)
       // We might have two nodes with same x value for a short time
       if(point == node->prev->point) {
         node = node->prev;
-      } else if (point == node->next->point) {
+      } else if(point == node->next->point) {
         node = node->next;
       } else {
         assert(0);
@@ -101,8 +97,7 @@ Node *AdvancingFront::LocatePoint(Point const *point)
   return node;
 }
 
-AdvancingFront::~AdvancingFront()
-{
+AdvancingFront::~AdvancingFront() {
 }
 
 }

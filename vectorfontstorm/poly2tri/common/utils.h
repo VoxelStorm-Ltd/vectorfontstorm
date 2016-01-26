@@ -77,8 +77,7 @@ Orientation Orient2d(Point const &pa, Point const &pb, Point const &pc) {
 }
 
 /*
-bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd)
-{
+bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd) {
   float pdx = pd.x;
   float pdy = pd.y;
   float adx = pa.x - pdx;
@@ -107,7 +106,6 @@ bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd)
 
   return true;
 }
-
 */
 
 bool InScanArea(Point const &pa, Point const &pb, Point const &pc, Point const &pd) {

@@ -6,8 +6,8 @@
 namespace vectorfontstorm {
 
 class point {
-  friend class segment;
-  friend class font;
+  template<typename T> friend class segment;
+  template<typename T> friend class font;
 
   enum class types {                                                            // what type of point this is - see http://www.freetype.org/freetype2/docs/glyphs/glyphs-6.html
     ON,                                                                         // on the curve

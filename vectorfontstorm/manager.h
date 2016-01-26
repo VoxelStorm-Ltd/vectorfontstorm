@@ -5,8 +5,9 @@
 
 namespace vectorfontstorm {
 
+template<typename T>
 class manager {
-  std::vector<font> fonts;
+  std::vector<font<T>> fonts;
 
 public:
   manager();
