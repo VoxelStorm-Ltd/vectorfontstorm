@@ -4,7 +4,6 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath_forward_dec.h"
 #include "cast_if_required.h"
 #include "poly2tri/poly2tri.h"
 #include "point.h"
@@ -23,8 +22,7 @@ class segment {
     LINE,                                                                       // two successive ON points form a line segment
     CONIC,                                                                      // a conic OFF point between two successive ON points forms a conic bezier arc
     CUBIC                                                                       // two cubic OFF points between two ON points forms a cubic bezier arc
-  };
-  types type = types::UNKNOWN;
+  } type = types::UNKNOWN;
 
   std::vector<point> points;
 

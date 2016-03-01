@@ -8,7 +8,7 @@ point::point(float x, float y, types newtype)
   /// Component constructor
 }
 
-point::point(Vector2f const &newcoords, types newtype)
+point::point(vector2f const &newcoords, types newtype)
   : type(newtype),
     coords(newcoords) {
   /// Vector constructor

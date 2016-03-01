@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "vmath_forward_dec.h"
 #include "cast_if_required.h"
 #include "poly2tri/poly2tri.h"
 
@@ -26,9 +25,7 @@ public:
     COUNTERCLOCKWISE,                                                           // the polygon is wound counterclockwise
     EXTERNAL = CLOCKWISE,                                                       // which winding is used for external polygons (outlines)
     INTERNAL = COUNTERCLOCKWISE                                                 // which winding is used for internal polygons (holes)
-  };
-
-  windingtype winding = windingtype::UNTESTED;                                  // what sort of winding this polygon has - cached
+  } winding = windingtype::UNTESTED;                                            // what sort of winding this polygon has - cached
 
 private:
   std::vector<segment<T>> segments;

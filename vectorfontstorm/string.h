@@ -2,7 +2,13 @@
 #define VECTORFONTSTORM_STRING_H_INCLUDED
 
 #include <string>
-#include "vmath.h"
+#include <limits>
+#include <vector>
+#include "vectorstorm/vector/vector2.h"
+#include "vectorstorm/vector/vector3.h"
+#include "vectorstorm/quat/quat_forward.h"
+#include "vectorstorm/aabb/aabb2.h"
+#include "vectorstorm/aabb/aabb3.h"
 #include "buffer.h"
 
 namespace vectorfontstorm {
@@ -11,7 +17,10 @@ template<typename T> class font;
 
 template<typename T>
 class string {
-public:
+private:
+  std::string contents;
+  vectorfontstorm::font<T> &thisfont;
+
   enum class aligntype {
     TOPLEFT,
     TOP,
@@ -22,12 +31,7 @@ public:
     BOTTOMLEFT,
     BOTTOM,
     BOTTOMRIGHT
-  };
-private:
-  std::string contents;
-  vectorfontstorm::font<T> &thisfont;
-
-  aligntype align = aligntype::CENTRE;
+  } align = aligntype::CENTRE;
 
 public:
   buffer<T> outline;                                                            // the opengl buffer for the outline of the string
@@ -44,8 +48,8 @@ private:
 public:
   string(std::string const &newcontents,
          vectorfontstorm::font<T> &newfont,
-         Vector3f const &position = {0.0f, 0.0f, 0.0f},
-         Quatf const &orientation = {1.0f, 0.0f, 0.0f, 0.0f},
+         vector3f const &position = {0.0f, 0.0f, 0.0f},
+         quatf const &orientation = {1.0f, 0.0f, 0.0f, 0.0f},
          float scale = 1.0f,
          float depth = 1.0f,
          aligntype alignment = aligntype::CENTRE);
@@ -56,7 +60,7 @@ public:
   ~string();
 
 private:
-  void init(Vector3f const &position, Quatf const &orientation, float scale, float depth);
+  void init(vector3f const &position, quatf const &orientation, float scale, float depth);
 
 public:
   std::string const &get_contents() const __attribute__((__unused__, __const__));
@@ -65,12 +69,12 @@ public:
   float get_bounds_right()  const __attribute__((__const__));
   float get_bounds_top()    const __attribute__((__const__));
   float get_bounds_bottom() const __attribute__((__const__));
-  Vector2f get_bounds_bottomleft_2d() const;
-  Vector2f get_bounds_topright_2d() const;
-  Vector3f get_bounds_bottomleft_3d() const;
-  Vector3f get_bounds_topright_3d() const;
-  Aabb2f get_bounds_2d() const;
-  Aabb3f get_bounds_3d() const;
+  vector2f get_bounds_bottomleft_2d() const;
+  vector2f get_bounds_topright_2d() const;
+  vector3f get_bounds_bottomleft_3d() const;
+  vector3f get_bounds_topright_3d() const;
+  aabb2f get_bounds_2d() const;
+  aabb3f get_bounds_3d() const;
 };
 
 #include "cast_if_required.h"
@@ -78,8 +82,8 @@ public:
 template<typename T>
 string<T>::string(std::string const &newstring,
                   vectorfontstorm::font<T> &newfont,
-                  Vector3f const &position,
-                  Quatf const &orientation,
+                  vector3f const &position,
+                  quatf const &orientation,
                   float scale,
                   float depth,
                   aligntype alignment)
@@ -140,8 +144,8 @@ string<T>::~string() {
 }
 
 template<typename T>
-void string<T>::init(Vector3f const &position,
-                     Quatf const &orientation,
+void string<T>::init(vector3f const &position,
+                     quatf const &orientation,
                      float scale,
                      float depth) {
   /// Initialise this string
@@ -154,8 +158,8 @@ void string<T>::init(Vector3f const &position,
   buffer_data<T> data_back;
   buffer_data<T> data_edge;
 
-  Vector2f advance;
-  Vector2f advance_max;
+  vector2f advance;
+  vector2f advance_max;
   float const line_height = static_cast<float>(thisfont.get_height());
   struct line {
     float width = 0.0f;
@@ -365,28 +369,28 @@ float string<T>::get_bounds_bottom() const {
   return bounds_bottom;
 }
 template<typename T>
-Vector2f string<T>::get_bounds_bottomleft_2d() const {
-  return Vector2f(bounds_left, bounds_bottom);
+vector2f string<T>::get_bounds_bottomleft_2d() const {
+  return vector2f(bounds_left, bounds_bottom);
 }
 template<typename T>
-Vector2f string<T>::get_bounds_topright_2d() const {
-  return Vector2f(bounds_right, bounds_top);
+vector2f string<T>::get_bounds_topright_2d() const {
+  return vector2f(bounds_right, bounds_top);
 }
 template<typename T>
-Vector3f string<T>::get_bounds_bottomleft_3d() const {
-  return Vector3f(bounds_left, bounds_bottom, 0.0f);
+vector3f string<T>::get_bounds_bottomleft_3d() const {
+  return vector3f(bounds_left, bounds_bottom, 0.0f);
 }
 template<typename T>
-Vector3f string<T>::get_bounds_topright_3d() const {
-  return Vector3f(bounds_right, bounds_top, 0.0f);
+vector3f string<T>::get_bounds_topright_3d() const {
+  return vector3f(bounds_right, bounds_top, 0.0f);
 }
 template<typename T>
-Aabb2f string<T>::get_bounds_2d() const {
-  return Aabb2f(bounds_left, bounds_bottom, bounds_right, bounds_top);
+aabb2f string<T>::get_bounds_2d() const {
+  return aabb2f(bounds_left, bounds_bottom, bounds_right, bounds_top);
 }
 template<typename T>
-Aabb3f string<T>::get_bounds_3d() const {
-  return Aabb3f(bounds_left, bounds_bottom, 0.0f, bounds_right, bounds_top, 0.0f);
+aabb3f string<T>::get_bounds_3d() const {
+  return aabb3f(bounds_left, bounds_bottom, 0.0f, bounds_right, bounds_top, 0.0f);
 }
 
 }
