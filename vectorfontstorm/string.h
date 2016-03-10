@@ -97,22 +97,19 @@ template<typename T>
 string<T>::string(string &&other) noexcept
   : contents(std::move(other.contents)),
     thisfont(other.thisfont),
-    align(other.align) {
+    align(other.align),
+    outline(std::move(other.outline)),
+    fill(   std::move(other.fill)),
+    back(   std::move(other.back)),
+    edge(   std::move(other.edge)),
+    bounds_left(  other.bounds_left),
+    bounds_bottom(other.bounds_bottom),
+    bounds_right( other.bounds_right),
+    bounds_top(   other.bounds_top) {
   /// Move constructor
   #ifndef NDEBUG
     //std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
   #endif // NDEBUG
-  align = other.align;
-  std::swap(contents, other.contents);
-  thisfont = other.thisfont;
-  std::swap(outline, other.outline);
-  std::swap(fill,    other.fill);
-  std::swap(back,    other.back);
-  std::swap(edge,    other.edge);
-  std::swap(bounds_left, other.bounds_left);
-  std::swap(bounds_bottom, other.bounds_bottom);
-  std::swap(bounds_right, other.bounds_right);
-  std::swap(bounds_top, other.bounds_top);
 }
 template<typename T>
 string<T> &string<T>::operator=(string<T> &&other) noexcept {
