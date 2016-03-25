@@ -10,6 +10,7 @@
 #include "vectorstorm/aabb/aabb2.h"
 #include "vectorstorm/aabb/aabb3.h"
 #include "buffer.h"
+#include "aligntype.h"
 
 namespace vectorfontstorm {
 
@@ -21,17 +22,7 @@ private:
   std::string contents;
   vectorfontstorm::font<T> &thisfont;
 
-  enum class aligntype {
-    TOPLEFT,
-    TOP,
-    TOPRIGHT,
-    LEFT,
-    RIGHT,
-    CENTRE,
-    BOTTOMLEFT,
-    BOTTOM,
-    BOTTOMRIGHT
-  } align = aligntype::CENTRE;
+  aligntype align = aligntype::CENTRE;
 
 public:
   buffer<T> outline;                                                            // the opengl buffer for the outline of the string
@@ -42,8 +33,8 @@ public:
 private:
   float bounds_left   = std::numeric_limits<float>::max();                      // outer-most points of the rendered model
   float bounds_bottom = std::numeric_limits<float>::max();
-  float bounds_right  = std::numeric_limits<float>::min();
-  float bounds_top    = std::numeric_limits<float>::min();
+  float bounds_right  = std::numeric_limits<float>::lowest();
+  float bounds_top    = std::numeric_limits<float>::lowest();
 
 public:
   string(std::string const &newcontents,
@@ -58,6 +49,7 @@ public:
   string(string &&other) noexcept;                                              // allow move
   string &operator=(string &&other) noexcept;
   ~string();
+  void swap(string<T> &other);
 
 private:
   void init(vector3f const &position, quatf const &orientation, float scale, float depth);
@@ -70,8 +62,12 @@ public:
   float get_bounds_top()    const __attribute__((__const__));
   float get_bounds_bottom() const __attribute__((__const__));
   vector2f get_bounds_bottomleft_2d() const;
+  vector2f get_bounds_bottomright_2d() const;
+  vector2f get_bounds_topleft_2d() const;
   vector2f get_bounds_topright_2d() const;
   vector3f get_bounds_bottomleft_3d() const;
+  vector3f get_bounds_bottomright_3d() const;
+  vector3f get_bounds_topleft_3d() const;
   vector3f get_bounds_topright_3d() const;
   aabb2f get_bounds_2d() const;
   aabb3f get_bounds_3d() const;
@@ -98,10 +94,6 @@ string<T>::string(string &&other) noexcept
   : contents(std::move(other.contents)),
     thisfont(other.thisfont),
     align(other.align),
-    outline(std::move(other.outline)),
-    fill(   std::move(other.fill)),
-    back(   std::move(other.back)),
-    edge(   std::move(other.edge)),
     bounds_left(  other.bounds_left),
     bounds_bottom(other.bounds_bottom),
     bounds_right( other.bounds_right),
@@ -110,6 +102,11 @@ string<T>::string(string &&other) noexcept
   #ifndef NDEBUG
     //std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
   #endif // NDEBUG
+  using std::swap;                                                              // needed to allow our own swap to be found
+  swap(outline, other.outline);                                                 // swap these rather than just move, to make destruction safe
+  swap(fill,    other.fill);
+  swap(back,    other.back);
+  swap(edge,    other.edge);
 }
 template<typename T>
 string<T> &string<T>::operator=(string<T> &&other) noexcept {
@@ -117,18 +114,44 @@ string<T> &string<T>::operator=(string<T> &&other) noexcept {
   #ifndef NDEBUG
     //std::cout << "VectorFontStorm: WARNING: moving string \"" << other.contents << "\" in assignment - this is expensive." << std::endl;
   #endif // NDEBUG
+  using std::swap;                                                              // needed to allow our own swap to be found
   align = other.align;
-  std::swap(contents, other.contents);
+  swap(contents, other.contents);
   thisfont = other.thisfont;
-  std::swap(outline, other.outline);
-  std::swap(fill,    other.fill);
-  std::swap(back,    other.back);
-  std::swap(edge,    other.edge);
-  std::swap(bounds_left, other.bounds_left);
-  std::swap(bounds_bottom, other.bounds_bottom);
-  std::swap(bounds_right, other.bounds_right);
-  std::swap(bounds_top, other.bounds_top);
+  swap(outline, other.outline);
+  swap(fill,    other.fill);
+  swap(back,    other.back);
+  swap(edge,    other.edge);
+  swap(bounds_left, other.bounds_left);
+  swap(bounds_bottom, other.bounds_bottom);
+  swap(bounds_right, other.bounds_right);
+  swap(bounds_top, other.bounds_top);
   return *this;
+}
+template<typename T>
+void string<T>::swap(string<T> &other) {
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" member swapping with string \"" << other.contents << "\"" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
+  using std::swap;                                                              // needed to allow our own swap to be found
+  swap(contents,      other.contents);
+  swap(thisfont,      other.thisfont);
+  swap(align,         other.align);
+  swap(outline,       other.outline);
+  swap(fill,          other.fill);
+  swap(back,          other.back);
+  swap(edge,          other.edge);
+  swap(bounds_left,   other.bounds_left);
+  swap(bounds_bottom, other.bounds_bottom);
+  swap(bounds_right,  other.bounds_right);
+  swap(bounds_top,    other.bounds_top);
+}
+template<typename T>
+void swap(string<T> &lhs, string<T> &rhs) {
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: String \"" << lhs.get_contents() << "\" swapping with string \"" << rhs.get_contents() << "\"" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
+  lhs.swap(rhs);
 }
 
 template<typename T>
@@ -190,6 +213,10 @@ void string<T>::init(vector3f const &position,
       GLuint vbo_start_back    = cast_if_required<GLuint>(data_back.vbo.size());
       GLuint vbo_start_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
       float const new_advance  = thisfont.get_outline_and_fill(thischar, data_outline, data_fill, data_back, data_edge);
+      if(depth == 0.0f) {
+        data_edge.vbo.clear();                                                  // discard edge data if this string has zero depth
+        data_edge.ibo.clear();
+      }
       GLuint vbo_end_outline   = cast_if_required<GLuint>(data_outline.vbo.size());
       GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());
       GLuint vbo_end_back      = cast_if_required<GLuint>(data_back.vbo.size());
@@ -322,16 +349,17 @@ void string<T>::init(vector3f const &position,
       p.coords.x *= scale;                                                      // scale the model, x
       p.coords.y *= scale;                                                      // scale the model, y
       p.coords.z *= depth;                                                      // apply depth
+      bounds_left   = std::min(bounds_left,   p.coords.x);                      // update the outer bounds prior to shifting into place
+      bounds_right  = std::max(bounds_right,  p.coords.x);
+      bounds_bottom = std::min(bounds_bottom, p.coords.y);
+      bounds_top    = std::max(bounds_top,    p.coords.y);
       p.coords *= orientation;                                                  // rotate the model
       p.coords += position;                                                     // position the model in space
-      bounds_left   = std::min(bounds_left,   p.coords.x);                      // update the outer bounds
-      bounds_right  = std::max(bounds_right,  p.coords.x);
-      bounds_top    = std::min(bounds_top,    p.coords.y);
-      bounds_bottom = std::max(bounds_bottom, p.coords.y);
     }
   }
   #ifdef DEBUG_VECTORFONTSTORM
     std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" bounds " << get_bounds_2d() << std::endl;
+    std::cout << "VectorFontStorm: DEBUG: Position " << position << std::endl;
     std::cout << "VectorFontStorm: DEBUG: outline vbo size " << data_outline.vbo.size() << " ibo size " << data_outline.ibo.size() << std::endl;
     std::cout << "VectorFontStorm: DEBUG: fill vbo size " << data_fill.vbo.size() << " ibo size " << data_fill.ibo.size() << std::endl;
     std::cout << "VectorFontStorm: DEBUG: back vbo size " << data_back.vbo.size() << " ibo size " << data_back.ibo.size() << std::endl;
@@ -341,7 +369,9 @@ void string<T>::init(vector3f const &position,
   outline.upload(data_outline);
   fill.upload(data_fill);
   back.upload(data_back);
-  edge.upload(data_edge);
+  if(depth != 0.0f) {
+    edge.upload(data_edge);
+  }
 }
 
 template<typename T>
@@ -370,12 +400,28 @@ vector2f string<T>::get_bounds_bottomleft_2d() const {
   return vector2f(bounds_left, bounds_bottom);
 }
 template<typename T>
+vector2f string<T>::get_bounds_bottomright_2d() const {
+  return vector2f(bounds_right, bounds_bottom);
+}
+template<typename T>
+vector2f string<T>::get_bounds_topleft_2d() const {
+  return vector2f(bounds_left, bounds_top);
+}
+template<typename T>
 vector2f string<T>::get_bounds_topright_2d() const {
   return vector2f(bounds_right, bounds_top);
 }
 template<typename T>
 vector3f string<T>::get_bounds_bottomleft_3d() const {
   return vector3f(bounds_left, bounds_bottom, 0.0f);
+}
+template<typename T>
+vector3f string<T>::get_bounds_bottomright_3d() const {
+  return vector3f(bounds_right, bounds_bottom, 0.0f);
+}
+template<typename T>
+vector3f string<T>::get_bounds_topleft_3d() const {
+  return vector3f(bounds_left, bounds_top, 0.0f);
 }
 template<typename T>
 vector3f string<T>::get_bounds_topright_3d() const {
