@@ -5,6 +5,10 @@
 #include "buffer_data.h"
 #include "cast_if_required.h"
 #include "poly2tri/poly2tri.h"
+#ifdef DEBUG_VECTORFONTSTORM
+  #include <sstream>
+  #include "timestorm/timer.h"
+#endif // DEBUG_VECTORFONTSTORM
 
 namespace vectorfontstorm {
 
