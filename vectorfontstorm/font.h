@@ -29,6 +29,7 @@ class font {
 public:
   font(unsigned char const *const memory_offset, size_t const memory_size, double desired_height = 1.0);
   ~font();
+  void swap(font<T> &other);
 
   double get_height() const __attribute__((__pure__));
 
@@ -101,6 +102,26 @@ font<T>::~font() {
   /// Default destructor
   FT_Done_Face(face);                                                           // release the font
   FT_Done_FreeType(library);                                                    // shut down library
+}
+
+template<typename T>
+void font<T>::swap(font<T> &other) {
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: Font at " << this << " member swapping with font at " << &other << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
+  using std::swap;                                                              // needed to allow our own swap to be found
+  swap(library, other.library);
+  swap(face,    other.face);
+  swap(height,  other.height);
+  swap(scale,   other.scale);
+  swap(glyphs,  other.glyphs);
+}
+template<typename T>
+void swap(font<T> &lhs, font<T> &rhs) {
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: Font at " << &lhs << " swapping with font at " << &rhs << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
+  lhs.swap(rhs);
 }
 
 template<typename T>
