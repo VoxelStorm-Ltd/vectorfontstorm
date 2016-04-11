@@ -100,6 +100,9 @@ font<T>::font(unsigned char const *const memory_offset,
 template<typename T>
 font<T>::~font() {
   /// Default destructor
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: Font at " << this << " being destroyed" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   FT_Done_Face(face);                                                           // release the font
   FT_Done_FreeType(library);                                                    // shut down library
 }

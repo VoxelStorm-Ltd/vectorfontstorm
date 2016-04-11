@@ -6,7 +6,7 @@
 #include <vector>
 #include "vectorstorm/vector/vector2.h"
 #include "vectorstorm/vector/vector3.h"
-#include "vectorstorm/quat/quat_forward.h"
+#include "vectorstorm/quat/quat.h"
 #include "vectorstorm/aabb/aabb2.h"
 #include "vectorstorm/aabb/aabb3.h"
 #include "buffer.h"
@@ -21,6 +21,11 @@ class string {
 private:
   std::string contents;
   vectorfontstorm::font<T> &thisfont;
+
+  vector3f position;
+  quatf orientation;
+  float scale = 1.0f;
+  float depth = 0.0f;
 
   aligntype align = aligntype::CENTRE;
 
@@ -39,23 +44,27 @@ private:
 public:
   string(std::string const &newcontents,
          vectorfontstorm::font<T> &newfont,
-         vector3f const &position = {0.0f, 0.0f, 0.0f},
-         quatf const &orientation = {1.0f, 0.0f, 0.0f, 0.0f},
-         float scale = 1.0f,
-         float depth = 1.0f,
+         vector3f const &newpositnewion = {0.0f, 0.0f, 0.0f},
+         quatf const &neworientation = {1.0f, 0.0f, 0.0f, 0.0f},
+         float newscale = 1.0f,
+         float newdepth = 1.0f,
          aligntype alignment = aligntype::CENTRE);
   string(string const &other) = delete;                                         // disallow copy
   string &operator=(string const &other) = delete;
-  string(string &&other) noexcept;                                              // allow move
-  string &operator=(string &&other) noexcept;
+  //string(string &&other) noexcept;                                              // allow move
+  //string &operator=(string &&other) noexcept;
+  string(string const &&other) = delete;                                        // disallow move
+  string &operator=(string const &&other) = delete;
   ~string();
-  void swap(string<T> &other);
+  //void swap(string<T> &other);
 
 private:
-  void init(vector3f const &position, quatf const &orientation, float scale, float depth);
+  void init();
 
 public:
-  std::string const &get_contents() const __attribute__((__unused__, __const__));
+  std::string const &get_contents() const __attribute__((__const__));
+
+  //void update_contents(std::string const &new_contents);
 
   float get_bounds_left()   const __attribute__((__const__));
   float get_bounds_right()  const __attribute__((__const__));
@@ -78,27 +87,39 @@ public:
 template<typename T>
 string<T>::string(std::string const &newstring,
                   vectorfontstorm::font<T> &newfont,
-                  vector3f const &position,
-                  quatf const &orientation,
-                  float scale,
-                  float depth,
+                  vector3f const &newposition,
+                  quatf const &neworientation,
+                  float newscale,
+                  float newdepth,
                   aligntype alignment)
   : contents(newstring),
     thisfont(newfont),
+    position(newposition),
+    orientation(neworientation),
+    scale(newscale),
+    depth(newdepth),
     align(alignment) {
   /// Default constructor
-  init(position, orientation, scale, depth);
+  init();
 }
+/*
 template<typename T>
 string<T>::string(string &&other) noexcept
   : contents(std::move(other.contents)),
     thisfont(other.thisfont),
+    position(other.position),
+    orientation(other.orientation),
+    scale(other.scale),
+    depth(other.depth),
     align(other.align),
     bounds_left(  other.bounds_left),
     bounds_bottom(other.bounds_bottom),
     bounds_right( other.bounds_right),
     bounds_top(   other.bounds_top) {
   /// Move constructor
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" moving from \"" << other.contents << "\"" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   #ifndef NDEBUG
     //std::cout << "VectorFontStorm: WARNING: moving string \"" << contents << "\" - this is expensive." << std::endl;
   #endif // NDEBUG
@@ -111,17 +132,25 @@ string<T>::string(string &&other) noexcept
 template<typename T>
 string<T> &string<T>::operator=(string<T> &&other) noexcept {
   /// Move assignment constructor
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: String \"" << contents << "\" moving from \"" << other.contents << "\" in assignment" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   #ifndef NDEBUG
     //std::cout << "VectorFontStorm: WARNING: moving string \"" << other.contents << "\" in assignment - this is expensive." << std::endl;
   #endif // NDEBUG
   using std::swap;                                                              // needed to allow our own swap to be found
+  swap(position,    other.position);
+  swap(orientation, other.orientation);
+  scale = other.scale;
+  depth = other.depth;
   align = other.align;
   swap(contents, other.contents);
+  //swap(thisfont, other.thisfont);
   thisfont = other.thisfont;
-  swap(outline, other.outline);
-  swap(fill,    other.fill);
-  swap(back,    other.back);
-  swap(edge,    other.edge);
+  swap(outline,  other.outline);
+  swap(fill,     other.fill);
+  swap(back,     other.back);
+  swap(edge,     other.edge);
   swap(bounds_left, other.bounds_left);
   swap(bounds_bottom, other.bounds_bottom);
   swap(bounds_right, other.bounds_right);
@@ -135,7 +164,12 @@ void string<T>::swap(string<T> &other) {
   #endif // DEBUG_VECTORFONTSTORM
   using std::swap;                                                              // needed to allow our own swap to be found
   swap(contents,      other.contents);
-  swap(thisfont,      other.thisfont);
+  //swap(thisfont,      other.thisfont);
+  thisfont = other.thisfont;
+  swap(position,      other.position);
+  swap(orientation,   other.orientation);
+  swap(scale,         other.scale);
+  swap(depth,         other.depth);
   swap(align,         other.align);
   swap(outline,       other.outline);
   swap(fill,          other.fill);
@@ -153,7 +187,7 @@ void swap(string<T> &lhs, string<T> &rhs) {
   #endif // DEBUG_VECTORFONTSTORM
   lhs.swap(rhs);
 }
-
+*/
 template<typename T>
 string<T>::~string() {
   /// Default destructor
@@ -164,10 +198,7 @@ string<T>::~string() {
 }
 
 template<typename T>
-void string<T>::init(vector3f const &position,
-                     quatf const &orientation,
-                     float scale,
-                     float depth) {
+void string<T>::init() {
   /// Initialise this string
   outline.init();
   fill.init();
@@ -378,6 +409,15 @@ template<typename T>
 std::string const &string<T>::get_contents() const {
   return contents;
 }
+
+/*
+template<typename T>
+void string<T>::update_contents(std::string const &new_contents) {
+  /// Reinitialise this with new contents
+  contents = new_contents;
+  init();
+}
+*/
 
 template<typename T>
 float string<T>::get_bounds_left() const {
