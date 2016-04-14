@@ -10,11 +10,11 @@
 #include "vectorstorm/aabb/aabb2.h"
 #include "vectorstorm/aabb/aabb3.h"
 #include "buffer.h"
+#include "buffer_data.h"
+#include "font.h"
 #include "aligntype.h"
 
 namespace vectorfontstorm {
-
-template<typename T> class font;
 
 template<typename T>
 class string {
