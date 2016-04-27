@@ -80,9 +80,8 @@ void Triangle::MarkNeighbor(Triangle &t) {
  * Clears all references to all other triangles and points
  */
 void Triangle::Clear() {
-  Triangle *t;
   for(int i = 0; i < 3; i++) {
-    t = neighbors_[i];
+    Triangle *t = neighbors_[i];
     if(t) {
       t->ClearNeighbor(this);
     }

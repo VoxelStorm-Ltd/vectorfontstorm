@@ -213,7 +213,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
       std::cout << "VectorFontStorm: DEBUG: contour " << c << " points " << point_start << "->" << point_end << std::endl;
     #endif // DEBUG_VECTORFONTSTORM_DETAILED
     for(int p = point_start; p <= point_end; ++p) {                             // note: we're NOT stopping one short of the end point, last segment goes on top
-      point::types const ptype = outline.tags[p] & 0b00000001 ? point::types::ON : (outline.tags[p] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
+      point::types const ptype = (outline.tags[p] & 0b00000001) ? point::types::ON : ((outline.tags[p] & 0b00000010) ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
       thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[p].x) * scale, static_cast<double>(outline.points[p].y) * scale, ptype);
       point const thispoint(thiscontour.segments.back().points.back());         // copy, do not take a reference!
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
@@ -311,7 +311,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
       }
     }
     // special treatment for last segment of the curve
-    point::types const ptype = outline.tags[point_end] & 0b00000001 ? point::types::ON : (outline.tags[point_end] & 0b00000010 ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
+    point::types const ptype = (outline.tags[point_end] & 0b00000001) ? point::types::ON : ((outline.tags[point_end] & 0b00000010) ? point::types::OFF_THIRDORDER : point::types::OFF_SECONDORDER);
     thiscontour.segments.back().points.emplace_back(static_cast<double>(outline.points[point_end].x) * scale, static_cast<double>(outline.points[point_end].y) * scale, ptype);
     point const thispoint(thiscontour.segments.back().points.back());           // copy, do not take a reference!
     switch(thiscontour.segments.front().points.front().type) {
