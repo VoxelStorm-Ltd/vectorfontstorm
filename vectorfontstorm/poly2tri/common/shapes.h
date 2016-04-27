@@ -38,6 +38,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <memory>
 
 namespace p2t {
 
@@ -113,11 +114,13 @@ struct Point {
 
 // Represents a simple polygon's edge
 struct Edge {
-
-  Point *p, *q;
+  Point *p;
+  Point *q;
 
   /// Constructor
-  Edge(Point &p1, Point &p2) : p(&p1), q(&p2) {
+  Edge(Point &p1, Point &p2)
+    : p(&p1),
+      q(&p2) {
     if(p1.y > p2.y) {
       q = &p1;
       p = &p2;
@@ -206,7 +209,7 @@ public:
   bool interior_;
 };
 
-inline bool cmp(Point const *a, Point const *b) {
+inline bool cmp(std::shared_ptr<Point> const a, std::shared_ptr<Point> const b) {
   if(a->y < b->y) {
     return true;
   } else if(a->y == b->y) {

@@ -33,8 +33,8 @@ public:
   point &get_second_to_last_point() __attribute__((__pure__));
 
   void get_outline(buffer_data<T> &data_out) const;
-  void get_outline(std::vector<p2t::Point*> &polyline_out) const;
-  void get_outline_first(std::vector<p2t::Point*> &polyline_out) const;
+  void get_outline(p2t::polylinetype &polyline_out) const;
+  void get_outline_first(p2t::polylinetype &polyline_out) const;
   void get_extrude(buffer_data<T> &data_out) const;
 
   void subdivide_conic(std::vector<segment> &new_segments) const;
@@ -99,7 +99,7 @@ void segment<T>::get_outline(buffer_data<T> &data_out) const {
 }
 
 template<typename T>
-void segment<T>::get_outline(std::vector<p2t::Point*> &polyline_out) const {
+void segment<T>::get_outline(p2t::polylinetype &polyline_out) const {
   /// Output the outline for this segment to a poly2tri polyline
   #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points, polyline size " << polyline_out.size() << std::endl;
@@ -153,7 +153,7 @@ void segment<T>::get_outline(std::vector<p2t::Point*> &polyline_out) const {
 }
 
 template<typename T>
-void segment<T>::get_outline_first(std::vector<p2t::Point*> &polyline_out) const {
+void segment<T>::get_outline_first(p2t::polylinetype &polyline_out) const {
   /// Return just the first point of the outline
   #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     std::cout << "DEBUG: first      " << polyline_out.size() << ": " << points.front().coords.x << " " << points.front().coords.y << std::endl;

@@ -35,5 +35,6 @@
 #include "common/shapes.h"
 #include "sweep/sweep.h"
 #include "sweep/sweep_context.h"
+#include "polylinetype.h"
 
 #endif

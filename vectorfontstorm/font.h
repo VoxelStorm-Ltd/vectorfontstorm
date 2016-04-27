@@ -263,7 +263,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
         if(thiscontour.segments.back().points.size() == 1) {                    // is this the first point of the segment?
           // this is the first point of the segment, so it must be the first segment, and a continuation of the final segment
           // so we start this segment with a virtual point at the midpoint between this and the last
-          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL);  // placeholder location, we move this later
+          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL); // placeholder location, we move this later
         } else {
           point &prevpoint(thiscontour.segments.back().get_second_to_last_point()); // get the second-to-last
           switch(prevpoint.type) {
@@ -319,7 +319,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
       thiscontour.segments.back().type = segment<T>::types::LINE;
       thiscontour.segments.emplace_back();                                      // start the final new segment
       thiscontour.segments.back().points.emplace_back(thispoint);               // copy this point to start the next segment
-      thiscontour.segments.back().points.emplace_back(thiscontour.segments.front().points.front());   // and copy the first point to close the contour
+      thiscontour.segments.back().points.emplace_back(thiscontour.segments.front().points.front()); // and copy the first point to close the contour
       thiscontour.segments.back().type = segment<T>::types::LINE;
       break;
     case point::types::OFF_SECONDORDER:                                         // this shouldn't ever happen unless virtual point creation fucked up earlier
@@ -333,7 +333,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
       {
         point &first_virtual(thiscontour.segments.front().points.front());      // get the virtual point at the start
         point &first_conic(thiscontour.segments.front().points.begin()[1]);     // get the second point in the first segment
-        vector2f const midpoint(thispoint.coords.lerp(0.5f, first_conic.coords));   // work out the midpoint location
+        vector2f const midpoint(thispoint.coords.lerp(0.5f, first_conic.coords)); // work out the midpoint location
         first_virtual.coords = midpoint;                                        // move the first virtual into correct place
         thiscontour.segments.back().points.emplace_back(first_virtual);         // copy it to close this segment
         thiscontour.segments.back().type = segment<T>::types::CONIC;

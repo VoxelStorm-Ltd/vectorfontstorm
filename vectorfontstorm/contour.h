@@ -37,7 +37,7 @@ public:
   segment<T> &get_second_to_last_segment() __attribute__((__pure__));
 
   void get_outline(buffer_data<T> &data_out) const;
-  void get_outline(std::vector<p2t::Point*> &polyline_out) const;
+  void get_outline(p2t::polylinetype &polyline_out) const;
   void get_extrude(buffer_data<T> &data_out) const;
 
   windingtype get_winding();
@@ -77,7 +77,7 @@ void contour<T>::get_outline(buffer_data<T> &data_out) const {
 }
 
 template<typename T>
-void contour<T>::get_outline(std::vector<p2t::Point*> &polyline_out) const {
+void contour<T>::get_outline(p2t::polylinetype &polyline_out) const {
   /// Output the outline for this contour to a poly2tri polyline
   #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     std::cout << "VectorFontStorm: DEBUG:   Contour with " << segments.size() << " segments (polyline)" << std::endl;
@@ -125,7 +125,7 @@ typename contour<T>::windingtype contour<T>::get_winding() {
   }
   // adapted with reference to http://debian.fmi.uni-sofia.bg/~sergei/cgsr/docs/clockwise.htm
   // note: this may be unnecessarily expensive - you could do this with just two segments around one convex point, see https://en.wikipedia.org/wiki/Curve_orientation
-  std::vector<p2t::Point*> polyline;
+  p2t::polylinetype polyline;
   get_outline(polyline);
   if(polyline.size() < 3) {
     std::cout << "VectorFontStorm: WARNING: Contour has too few points to determine winding!" << std::endl;

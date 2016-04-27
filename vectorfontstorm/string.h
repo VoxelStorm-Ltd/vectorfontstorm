@@ -51,7 +51,7 @@ public:
          aligntype alignment = aligntype::CENTRE);
   string(string const &other) = delete;                                         // disallow copy
   string &operator=(string const &other) = delete;
-  //string(string &&other) noexcept;                                              // allow move
+  //string(string &&other) noexcept;                                            // allow move
   //string &operator=(string &&other) noexcept;
   string(string const &&other) = delete;                                        // disallow move
   string &operator=(string const &&other) = delete;
@@ -301,16 +301,16 @@ void string<T>::init() {
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "VectorFontStorm: DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
-      for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) {  // slide every point in this line's outline by the offset
+      for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) { // slide every point in this line's outline by the offset
         data_outline.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_fill; p != this_line.index_to_fill; ++p) {  // slide every point in this line's front fill by the offset
+      for(GLuint p = this_line.index_from_fill; p != this_line.index_to_fill; ++p) { // slide every point in this line's front fill by the offset
         data_fill.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_back; p != this_line.index_to_back; ++p) {  // slide every point in this line's back fill by the offset
+      for(GLuint p = this_line.index_from_back; p != this_line.index_to_back; ++p) { // slide every point in this line's back fill by the offset
         data_back.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_edge; p != this_line.index_to_edge; ++p) {  // slide every point in this line's edge fill by the offset
+      for(GLuint p = this_line.index_from_edge; p != this_line.index_to_edge; ++p) { // slide every point in this line's edge fill by the offset
         data_edge.vbo[p].coords.x += offset;
       }
     }
@@ -331,16 +331,16 @@ void string<T>::init() {
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "VectorFontStorm: DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
-      for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) {  // slide every point in this line's outline by the offset
+      for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) { // slide every point in this line's outline by the offset
         data_outline.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_fill; p != this_line.index_to_fill; ++p) {  // slide every point in this line's front fill by the offset
+      for(GLuint p = this_line.index_from_fill; p != this_line.index_to_fill; ++p) { // slide every point in this line's front fill by the offset
         data_fill.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_back; p != this_line.index_to_back; ++p) {  // slide every point in this line's back fill by the offset
+      for(GLuint p = this_line.index_from_back; p != this_line.index_to_back; ++p) { // slide every point in this line's back fill by the offset
         data_back.vbo[p].coords.x += offset;
       }
-      for(GLuint p = this_line.index_from_edge; p != this_line.index_to_edge; ++p) {  // slide every point in this line's edge fill by the offset
+      for(GLuint p = this_line.index_from_edge; p != this_line.index_to_edge; ++p) { // slide every point in this line's edge fill by the offset
         data_edge.vbo[p].coords.x += offset;
       }
     }

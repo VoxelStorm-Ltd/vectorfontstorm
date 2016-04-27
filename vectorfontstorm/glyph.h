@@ -123,7 +123,7 @@ void glyph<T>::cache_buffer() {
   // generate fills from outlines and holes
   auto c(contours.begin());
   while(c != contours.end()) {
-    std::vector<p2t::Point*> polyline;
+    p2t::polylinetype polyline;
     c->get_outline(polyline);                                                   // the first must be an external contour
     //if(polyline.empty()) {
     //  std::cout << "VectorFontStorm: WARNING: Requested buffer from glyph with empty contour for fill!" << std::endl;
@@ -136,7 +136,7 @@ void glyph<T>::cache_buffer() {
     ++c;
     while(c != contours.end() &&
           c->get_winding() == contour<T>::windingtype::INTERNAL) {              // iterate through all holes
-      std::vector<p2t::Point*> polyline_hole;
+      p2t::polylinetype polyline_hole;
       c->get_outline(polyline_hole);
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "VectorFontStorm:   DEBUG: hole size " << polyline_hole.size() << std::endl;

@@ -33,8 +33,8 @@
 #define SWEEP_CONTEXT_H
 
 #include <list>
-#include <vector>
 #include <cstddef>
+#include "../polylinetype.h"
 
 namespace p2t {
 
@@ -52,7 +52,7 @@ class SweepContext {
 public:
 
   /// Constructor
-  explicit SweepContext(std::vector<Point*> const &polyline);
+  explicit SweepContext(polylinetype const &polyline);
   /// Destructor
   ~SweepContext();
 
@@ -83,7 +83,7 @@ public:
 
   void RemoveFromMap(Triangle *triangle);
 
-  void AddHole(std::vector<Point*> const &polyline);
+  void AddHole(polylinetype const &polyline);
 
   void AddPoint(Point *point);
 
@@ -132,7 +132,7 @@ public:
 
   std::vector<Triangle*> triangles_;
   std::list<Triangle*> map_;
-  std::vector<Point*> points_;
+  polylinetype points_;
 
   // Advancing front
   AdvancingFront *front_;
@@ -144,7 +144,7 @@ public:
   Node *af_head_, *af_middle_, *af_tail_;
 
   void InitTriangulation();
-  void InitEdges(std::vector<Point*> const &polyline);
+  void InitEdges(polylinetype const &polyline);
 
 };
 

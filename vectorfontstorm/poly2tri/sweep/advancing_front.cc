@@ -60,7 +60,7 @@ Node *AdvancingFront::LocateNode(float x) {
 }
 
 Node *AdvancingFront::FindSearchNode(float x) {
-  (void)x; // suppress compiler warnings "unused parameter 'x'"
+  (void)x;                                                                      // suppress compiler warnings "unused parameter 'x'"
   // TODO: implement BST index
   return search_node_;
 }
