@@ -51,7 +51,7 @@ public:
          aligntype alignment = aligntype::CENTRE);
   string(string const &other) = delete;                                         // disallow copy
   string &operator=(string const &other) = delete;
-  //string(string &&other) noexcept;                                            // allow move
+  //string(string &&other) noexcept;                                              // allow move
   //string &operator=(string &&other) noexcept;
   string(string const &&other) = delete;                                        // disallow move
   string &operator=(string const &&other) = delete;
