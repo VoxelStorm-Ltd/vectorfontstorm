@@ -14,5 +14,4 @@
 #include "glyph.h"
 #include "font.h"
 #include "string.h"
-
 #endif // VECTORFONTSTORM_H_INCLUDED

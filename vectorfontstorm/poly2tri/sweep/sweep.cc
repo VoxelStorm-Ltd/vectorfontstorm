@@ -1,3 +1,28 @@
+    FlipEdgeEvent(tcx, eq, op, &ot, op);
+    // TODO: Actually I just figured out that it should be possible to
+    //       improve this by getting the next ot and op before the the above
+    //       flip and continue the flipScanEdgeEvent here
+    // set new ot and op here and loop back to inScanArea test
+    // also need to set a new flip_triangle first
+    // Turns out at first glance that this is somewhat complicated
+    // so it will have to wait.
+  } else {
+    Point &newP = NextFlipPoint(ep, eq, ot, op);
+    FlipScanEdgeEvent(tcx, ep, eq, flip_triangle, ot, newP);
+  }
+}
+
+Sweep::~Sweep() {
+
+  // Clean up memory
+  for(size_t i = 0; i < nodes_.size(); i++) {
+    delete nodes_[i];
+  }
+
+}
+
+}
+
 /*
  * Poly2Tri Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
