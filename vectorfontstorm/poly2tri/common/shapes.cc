@@ -1,4 +1,3 @@
-  }
 /*
  * Poly2Tri Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
@@ -207,126 +206,6 @@ Point *Triangle::PointCW(Point const &point) {
   } else if(&point == points_[2]) {
     return points_[1];
   }
-  ClearNeighbors();
-  points_[0] = nullptr;
-  points_[1] = nullptr;
-  points_[2] = nullptr;
-}
-
-void Triangle::ClearNeighbor(Triangle const *triangle) {
-  if(neighbors_[0] == triangle) {
-    neighbors_[0] = nullptr;
-  } else if(neighbors_[1] == triangle) {
-    neighbors_[1] = nullptr;
-  } else {
-    neighbors_[2] = nullptr;
-  }
-}
-
-void Triangle::ClearNeighbors() {
-  neighbors_[0] = nullptr;
-  neighbors_[1] = nullptr;
-  neighbors_[2] = nullptr;
-}
-
-void Triangle::ClearDelunayEdges() {
-  delaunay_edge[0] = delaunay_edge[1] = delaunay_edge[2] = false;
-}
-
-Point *Triangle::OppositePoint(Triangle &t, Point const &p) {
-  Point *cw = t.PointCW(p);
-  return PointCW(*cw);
-}
-
-// Legalized triangle by rotating clockwise around point(0)
-void Triangle::Legalize(Point &point) {
-  points_[1] = points_[0];
-  points_[0] = points_[2];
-  points_[2] = &point;
-}
-
-// Legalize triagnle by rotating clockwise around oPoint
-void Triangle::Legalize(Point &opoint, Point &npoint) {
-  if(&opoint == points_[0]) {
-    points_[1] = points_[0];
-    points_[0] = points_[2];
-    points_[2] = &npoint;
-  } else if(&opoint == points_[1]) {
-    points_[2] = points_[1];
-    points_[1] = points_[0];
-    points_[0] = &npoint;
-  } else if(&opoint == points_[2]) {
-    points_[0] = points_[2];
-    points_[2] = points_[1];
-    points_[1] = &npoint;
-  } else {
-    assert(0);
-  }
-}
-
-int Triangle::Index(Point const *p) {
-  if(p == points_[0]) {
-    return 0;
-  } else if(p == points_[1]) {
-    return 1;
-  } else if(p == points_[2]) {
-    return 2;
-  }
-  assert(0);
-  return -1;
-}
-
-int Triangle::EdgeIndex(Point const *p1, Point const *p2) {
-  if(points_[0] == p1) {
-    if(points_[1] == p2) {
-      return 2;
-    } else if(points_[2] == p2) {
-      return 1;
-    }
-  } else if(points_[1] == p1) {
-    if(points_[2] == p2) {
-      return 0;
-    } else if(points_[0] == p2) {
-      return 2;
-    }
-  } else if(points_[2] == p1) {
-    if(points_[0] == p2) {
-      return 1;
-    } else if(points_[1] == p2) {
-      return 0;
-    }
-  }
-  return -1;
-}
-
-void Triangle::MarkConstrainedEdge(int index) {
-  constrained_edge[index] = true;
-}
-
-void Triangle::MarkConstrainedEdge(Edge &edge) {
-  MarkConstrainedEdge(edge.p, edge.q);
-}
-
-// Mark edge as constrained
-void Triangle::MarkConstrainedEdge(Point *p, Point *q) {
-  if((q == points_[0] && p == points_[1]) || (q == points_[1] && p == points_[0])) {
-    constrained_edge[2] = true;
-  } else if((q == points_[0] && p == points_[2]) || (q == points_[2] && p == points_[0])) {
-    constrained_edge[1] = true;
-  } else if((q == points_[1] && p == points_[2]) || (q == points_[2] && p == points_[1])) {
-    constrained_edge[0] = true;
-  }
-}
-
-// The point counter-clockwise to given point
-Point *Triangle::PointCW(Point const &point) {
-  if(&point == points_[0]) {
-    return points_[2];
-  } else if(&point == points_[1]) {
-    return points_[0];
-  } else if(&point == points_[2]) {
-    return points_[1];
-  }
   assert(0);
   return nullptr;
 }
@@ -368,182 +247,52 @@ bool Triangle::GetConstrainedEdgeCCW(Point const &p) {
   if(&p == points_[0]) {
     return constrained_edge[2];
   } else if(&p == points_[1]) {
-  assert(0);
     return constrained_edge[0];
-  return nullptr;
   }
-}
   return constrained_edge[1];
-
 }
-// The point counter-clockwise to given point
 
-Point *Triangle::PointCCW(Point const &point) {
 bool Triangle::GetConstrainedEdgeCW(Point const &p) {
-  if(&point == points_[0]) {
   if(&p == points_[0]) {
-    return points_[1];
     return constrained_edge[1];
-  } else if(&point == points_[1]) {
   } else if(&p == points_[1]) {
-    return points_[2];
     return constrained_edge[2];
-  } else if(&point == points_[2]) {
   }
-    return points_[0];
   return constrained_edge[0];
-  }
 }
 
-  assert(0);
 void Triangle::SetConstrainedEdgeCCW(Point const &p, bool ce) {
-  return nullptr;
   if(&p == points_[0]) {
-}
     constrained_edge[2] = ce;
-
   } else if(&p == points_[1]) {
-// The neighbor clockwise to given point
     constrained_edge[0] = ce;
-Triangle *Triangle::NeighborCW(Point const &point) {
   } else {
-  if(&point == points_[0]) {
     constrained_edge[1] = ce;
-    return neighbors_[1];
   }
-  } else if(&point == points_[1]) {
 }
-    return neighbors_[2];
 
-  }
 void Triangle::SetConstrainedEdgeCW(Point const &p, bool ce) {
-  return neighbors_[0];
   if(&p == points_[0]) {
-}
     constrained_edge[1] = ce;
-
   } else if(&p == points_[1]) {
-// The neighbor counter-clockwise to given point
     constrained_edge[2] = ce;
-Triangle *Triangle::NeighborCCW(Point const &point) {
   } else {
-  if(&point == points_[0]) {
     constrained_edge[0] = ce;
-    return neighbors_[2];
   }
-  } else if(&point == points_[1]) {
 }
-    return neighbors_[0];
 
-  }
 bool Triangle::GetDelunayEdgeCCW(Point const &p) {
-  return neighbors_[1];
   if(&p == points_[0]) {
-}
     return delaunay_edge[2];
-
   } else if(&p == points_[1]) {
-bool Triangle::GetConstrainedEdgeCCW(Point const &p) {
     return delaunay_edge[0];
-  if(&p == points_[0]) {
   }
-    return constrained_edge[2];
   return delaunay_edge[1];
-  } else if(&p == points_[1]) {
 }
-    return constrained_edge[0];
 
-  }
 bool Triangle::GetDelunayEdgeCW(Point const &p) {
-  return constrained_edge[1];
   if(&p == points_[0]) {
-}
     return delaunay_edge[1];
-
-  } else if(&p == points_[1]) {
-bool Triangle::GetConstrainedEdgeCW(Point const &p) {
-    return delaunay_edge[2];
-  if(&p == points_[0]) {
-  }
-    return constrained_edge[1];
-  return delaunay_edge[0];
-  } else if(&p == points_[1]) {
-}
-    return constrained_edge[2];
-
-  }
-void Triangle::SetDelunayEdgeCCW(Point const &p, bool e) {
-  return constrained_edge[0];
-  if(&p == points_[0]) {
-}
-    delaunay_edge[2] = e;
-
-  } else if(&p == points_[1]) {
-void Triangle::SetConstrainedEdgeCCW(Point const &p, bool ce) {
-    delaunay_edge[0] = e;
-  if(&p == points_[0]) {
-  } else {
-    constrained_edge[2] = ce;
-    delaunay_edge[1] = e;
-  }
-  } else if(&p == points_[1]) {
-}
-    constrained_edge[0] = ce;
-
-  } else {
-void Triangle::SetDelunayEdgeCW(Point const &p, bool e) {
-    constrained_edge[1] = ce;
-  if(&p == points_[0]) {
-  }
-    delaunay_edge[1] = e;
-}
-  } else if(&p == points_[1]) {
-
-    delaunay_edge[2] = e;
-void Triangle::SetConstrainedEdgeCW(Point const &p, bool ce) {
-  } else {
-  if(&p == points_[0]) {
-    delaunay_edge[0] = e;
-    constrained_edge[1] = ce;
-  }
-  } else if(&p == points_[1]) {
-}
-    constrained_edge[2] = ce;
-
-  } else {
-// The neighbor across to given point
-    constrained_edge[0] = ce;
-Triangle &Triangle::NeighborAcross(Point const &opoint) {
-  }
-  if(&opoint == points_[0]) {
-}
-    return *neighbors_[0];
-
-  } else if(&opoint == points_[1]) {
-bool Triangle::GetDelunayEdgeCCW(Point const &p) {
-    return *neighbors_[1];
-  if(&p == points_[0]) {
-  }
-    return delaunay_edge[2];
-  return *neighbors_[2];
-  } else if(&p == points_[1]) {
-}
-    return delaunay_edge[0];
-
-  }
-void Triangle::DebugPrint() {
-  return delaunay_edge[1];
-  std::cout << points_[0]->x << "," << points_[0]->y << " ";
-}
-  std::cout << points_[1]->x << "," << points_[1]->y << " ";
-
-  std::cout << points_[2]->x << "," << points_[2]->y << std::endl;
-bool Triangle::GetDelunayEdgeCW(Point const &p) {
-}
-  if(&p == points_[0]) {
-
-    return delaunay_edge[1];
-}
   } else if(&p == points_[1]) {
     return delaunay_edge[2];
   }
