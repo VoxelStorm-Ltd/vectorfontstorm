@@ -82,7 +82,9 @@ void buffer<T>::upload(buffer_data<T> const &data) {
   /// Upload this buffer to opengl
   num_verts = cast_if_required<GLuint>(data.ibo.size());
   if(num_verts == 0) {
-    std::cout << "VectorFontStorm: WARNING: Not uploading zero-sized buffer to vbo " << vbo << " ibo " << ibo << "." << std::endl;
+    #ifndef NDEBUG
+      std::cout << "VectorFontStorm: WARNING: Not uploading zero-sized buffer to vbo " << vbo << " ibo " << ibo << "." << std::endl;
+    #endif // NDEBUG
     return;
   }
   #ifdef DEBUG_VECTORFONTSTORM

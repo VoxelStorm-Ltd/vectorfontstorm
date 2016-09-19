@@ -54,9 +54,9 @@ font<T>::font(unsigned char const *const memory_offset,
   FT_Init_FreeType(&library);                                                   // initialise library
   FT_New_Memory_Face(library, memory_offset, memory_size, 0, &face);            // load font from memory
   FT_Select_Charmap(face, FT_ENCODING_UNICODE);                                 // select charmap
-  float constexpr hres      = 64;                                               // from #define HRES 64 - Freetype uses 1/64th of a point scale
-  float constexpr dpi       = 72;
-  float const     font_size = face->units_per_EM;                               // use this for perfect scaling
+  float constexpr const hres      = 64;                                         // from #define HRES 64 - Freetype uses 1/64th of a point scale
+  float constexpr const dpi       = 72;
+  float           const font_size = face->units_per_EM;                         // use this for perfect scaling
   FT_F26Dot6 const font_size_ft = static_cast<FT_F26Dot6>(font_size * hres);    // something something fake fixed point conversion
   FT_Set_Char_Size(face, 0, font_size_ft, dpi, dpi);                            // set char size
   FT_Set_Transform(face, nullptr, nullptr);                                     // set transform matrix - identity
