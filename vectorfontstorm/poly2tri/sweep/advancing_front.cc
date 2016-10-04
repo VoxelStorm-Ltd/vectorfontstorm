@@ -59,15 +59,14 @@ Node *AdvancingFront::LocateNode(float x) {
   return nullptr;
 }
 
-Node *AdvancingFront::FindSearchNode(float x) {
-  (void)x;                                                                      // suppress compiler warnings "unused parameter 'x'"
+Node *AdvancingFront::FindSearchNode() {
   // TODO: implement BST index
   return search_node_;
 }
 
 Node *AdvancingFront::LocatePoint(Point const *point) {
   float const px = point->x;
-  Node *node = FindSearchNode(px);
+  Node *node = FindSearchNode();
   float const nx = node->point->x;
 
   if(px == nx) {
@@ -89,11 +88,14 @@ Node *AdvancingFront::LocatePoint(Point const *point) {
     }
   } else {
     while((node = node->next) != nullptr) {
-      if(point == node->point)
+      if(point == node->point) {
         break;
+      }
     }
   }
-  if(node) search_node_ = node;
+  if(node) {
+    search_node_ = node;
+  }
   return node;
 }
 

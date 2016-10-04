@@ -157,7 +157,12 @@ private:
    *       n4                    n4
    * </pre>
    */
-  void RotateTrianglePair(Triangle &t, Point &p, Triangle &ot, Point &op) const;
+  #ifdef __MINGW32__
+    // this is a workaround for some incomprehensible windows bug or other
+    void RotateTrianglePair(Triangle &t, Point &p, Triangle &ot, Point &op) const __attribute__((__optimize__("O1")));
+  #else
+    void RotateTrianglePair(Triangle &t, Point &p, Triangle &ot, Point &op) const;
+  #endif // __MINGW32__
 
   /**
    * Fills holes in the Advancing Front

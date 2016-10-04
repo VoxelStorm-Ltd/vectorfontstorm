@@ -33,14 +33,17 @@ public:
 
   double get_height() const __attribute__((__pure__));
 
-  float get_outline(         char const thischar, buffer_data<T> &data_out);
-  float get_fill(            char const thischar, buffer_data<T> &data_out);
-  float get_back(            char const thischar, buffer_data<T> &data_out);
-  float get_edge(            char const thischar, buffer_data<T> &data_out);
-  float get_outline_and_fill(char const thischar, buffer_data<T> &data_out_outline,
-                                                  buffer_data<T> &data_out_fill,
-                                                  buffer_data<T> &data_out_back,
-                                                  buffer_data<T> &data_out_edge);
+  float get_outline(                   char const thischar, buffer_data<T> &data_out);
+  float get_fill(                      char const thischar, buffer_data<T> &data_out);
+  float get_back(                      char const thischar, buffer_data<T> &data_out);
+  float get_edge(                      char const thischar, buffer_data<T> &data_out);
+  float get_outline_and_fill(          char const thischar, buffer_data<T> &data_out_outline,
+                                                            buffer_data<T> &data_out_fill,
+                                                            buffer_data<T> &data_out_back);
+  float get_outline_and_fill_and_edges(char const thischar, buffer_data<T> &data_out_outline,
+                                                            buffer_data<T> &data_out_fill,
+                                                            buffer_data<T> &data_out_back,
+                                                            buffer_data<T> &data_out_edge);
 
   glyph<T> &load_glyph_from_freetype(char const thischar, glyph_map_iterator_type &it);
 };
@@ -172,12 +175,24 @@ template<typename T>
 float font<T>::get_outline_and_fill(char const thischar,
                                     buffer_data<T> &data_out_outline,
                                     buffer_data<T> &data_out_fill,
-                                    buffer_data<T> &data_out_back,
-                                    buffer_data<T> &data_out_edge) {
+                                    buffer_data<T> &data_out_back) {
   /// Output the vertices for this character's fill and outlines to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
   glyph<T> &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
-  thisglyph.correct_winding();
+  thisglyph.get_outline(data_out_outline);
+  thisglyph.get_fill(data_out_fill);
+  thisglyph.get_back(data_out_back);
+  return thisglyph.get_advance();
+}
+template<typename T>
+float font<T>::get_outline_and_fill_and_edges(char const thischar,
+                                              buffer_data<T> &data_out_outline,
+                                              buffer_data<T> &data_out_fill,
+                                              buffer_data<T> &data_out_back,
+                                              buffer_data<T> &data_out_edge) {
+  /// Output the vertices for this character's fill and outlines and edges to an indexed buffer, and return the advance
+  auto it = glyphs.find(thischar);
+  glyph<T> &thisglyph = it == glyphs.end() ? load_glyph_from_freetype(thischar, it) : it->second;
   thisglyph.get_outline(data_out_outline);
   thisglyph.get_fill(data_out_fill);
   thisglyph.get_back(data_out_back);
@@ -342,6 +357,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_itera
     }
     point_start = point_end + 1;
   }
+  thisglyph.correct_winding();
   return thisglyph;
 }
 

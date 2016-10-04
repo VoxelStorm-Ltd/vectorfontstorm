@@ -243,10 +243,11 @@ void string<T>::init() {
       GLuint vbo_start_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
       GLuint vbo_start_back    = cast_if_required<GLuint>(data_back.vbo.size());
       GLuint vbo_start_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
-      float const new_advance  = thisfont.get_outline_and_fill(thischar, data_outline, data_fill, data_back, data_edge);
+      float new_advance;
       if(depth == 0.0f) {
-        data_edge.vbo.clear();                                                  // discard edge data if this string has zero depth
-        data_edge.ibo.clear();
+        new_advance = thisfont.get_outline_and_fill(thischar, data_outline, data_fill, data_back);
+      } else {
+        new_advance = thisfont.get_outline_and_fill_and_edges(thischar, data_outline, data_fill, data_back, data_edge);
       }
       GLuint vbo_end_outline   = cast_if_required<GLuint>(data_outline.vbo.size());
       GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());

@@ -121,9 +121,7 @@ Node &SweepContext::LocateNode(Point const &point) {
   return *front_->LocateNode(point.x);
 }
 
-void SweepContext::CreateAdvancingFront(std::vector<Node*> const &nodes) {
-
-  (void) nodes;
+void SweepContext::CreateAdvancingFront() {
   // Initial triangle
   Triangle *triangle = new Triangle(*points_[0], *tail_, *head_);
 
@@ -147,7 +145,7 @@ void SweepContext::RemoveNode(Node *node) {
 }
 
 void SweepContext::MapTriangleToNodes(Triangle &t) {
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i != 3; ++i) {
     if(!t.GetNeighbor(i)) {
       Node *n = front_->LocatePoint(t.PointCW(*t.GetPoint(i)));
       if(n) {

@@ -88,7 +88,7 @@ public:
 private:
   Node *head_, *tail_, *search_node_;
 
-  Node *FindSearchNode(float x) __attribute__((__pure__));
+  Node *FindSearchNode() __attribute__((__pure__));
 };
 
 inline Node *AdvancingFront::head() {
