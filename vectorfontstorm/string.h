@@ -300,7 +300,7 @@ void string<T>::init() {
         std::cout << "VectorFontStorm: DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
-        std::cout << "VectorFontStorm: DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
+        std::cout << "VectorFontStorm: DEBUG: this_line.index_from_outline " << this_line.index_from_outline << " this_line.index_to_outline " << this_line.index_to_outline << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
       for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) { // slide every point in this line's outline by the offset
         data_outline.vbo[p].coords.x += offset;
@@ -330,7 +330,7 @@ void string<T>::init() {
         std::cout << "VectorFontStorm: DEBUG: line advance " << advance_max.x << " width " << this_line.width << " offset " << offset << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
-        std::cout << "VectorFontStorm: DEBUG: this_line.index_from " << this_line.index_from << " this_line.index_to " << this_line.index_to << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
+        std::cout << "VectorFontStorm: DEBUG: this_line.index_from " << this_line.index_from_outline << " this_line.index_to_outline " << this_line.index_to_outline << " data_outline.vbo.size() " << data_outline.vbo.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
       for(GLuint p = this_line.index_from_outline; p != this_line.index_to_outline; ++p) { // slide every point in this line's outline by the offset
         data_outline.vbo[p].coords.x += offset;

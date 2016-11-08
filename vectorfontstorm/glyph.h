@@ -77,17 +77,20 @@ void glyph<T>::correct_winding() {
   #endif // DEBUG_VECTORFONTSTORM
   #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     unsigned int i = 0;
-    for(auto const &c : contours) {
+    for(auto &c : contours) {
       std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" contour " << i << " winding ";
       switch(c.get_winding()) {
-      case contour::windingtype::CLOCKWISE:
+      case contour<T>::windingtype::CLOCKWISE:
         std::cout << "clockwise" << std::endl;
         break;
-      case contour::windingtype::COUNTERCLOCKWISE:
+      case contour<T>::windingtype::COUNTERCLOCKWISE:
         std::cout << "counterclockwise" << std::endl;
         break;
-      case contour::windingtype::INDETERMINATE:
+      case contour<T>::windingtype::INDETERMINATE:
         std::cout << "indeterminate" << std::endl;
+        break;
+      default:
+        std::cout << "unknown(!)" << std::endl;
         break;
       }
       ++i;
