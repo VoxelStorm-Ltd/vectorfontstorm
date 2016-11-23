@@ -74,7 +74,7 @@ Node &Sweep::PointEvent(SweepContext &tcx, Point &point) {
 
   // Only need to check +epsilon since point never have smaller
   // x value than node due to how we fetch nodes from the front
-  if(point.x <= node.point->x + EPSILON) {
+  if(point.x <= node.point->x + std::numeric_limits<float>::epsilon()) {
     Fill(tcx, node);
   }
 

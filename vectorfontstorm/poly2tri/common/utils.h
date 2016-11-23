@@ -36,7 +36,8 @@
 #define _USE_MATH_DEFINES
 
 #include <exception>
-#include <math.h>
+#include <cmath>
+#include <limits>
 
 // C99 removes M_PI from math.h
 #ifndef M_PI
@@ -47,7 +48,6 @@ namespace p2t {
 
 float constexpr const PI_3div4 = 3.0f * static_cast<float>(M_PI) / 4.0f;
 float constexpr const PI_div2 = 1.57079632679489661923f;
-float constexpr const EPSILON = 1e-12f;
 
 enum Orientation {CW, CCW, COLLINEAR};
 
@@ -68,7 +68,7 @@ Orientation Orient2d(Point const &pa, Point const &pb, Point const &pc) {
   float detleft = (pa.x - pc.x) * (pb.y - pc.y);
   float detright = (pa.y - pc.y) * (pb.x - pc.x);
   float val = detleft - detright;
-  if(val > -EPSILON && val < EPSILON) {
+  if(val > -std::numeric_limits<float>::epsilon() && val < std::numeric_limits<float>::epsilon()) {
     return COLLINEAR;
   } else if(val > 0) {
     return CCW;
@@ -89,7 +89,7 @@ bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd) {
   float bdxady = bdx * ady;
   float oabd = adxbdy - bdxady;
 
-  if(oabd <= EPSILON) {
+  if(oabd <= std::numeric_limits<float>::epsilon()) {
     return false;
   }
 
@@ -110,12 +110,12 @@ bool InScanArea(Point &pa, Point &pb, Point &pc, Point &pd) {
 
 bool InScanArea(Point const &pa, Point const &pb, Point const &pc, Point const &pd) {
   float oadb = (pa.x - pb.x) * (pd.y - pb.y) - (pd.x - pb.x) * (pa.y - pb.y);
-  if(oadb >= -EPSILON) {
+  if(oadb >= -std::numeric_limits<float>::epsilon()) {
     return false;
   }
 
   float oadc = (pa.x - pc.x) * (pd.y - pc.y) - (pd.x - pc.x) * (pa.y - pc.y);
-  if(oadc <= EPSILON) {
+  if(oadc <= std::numeric_limits<float>::epsilon()) {
     return false;
   }
   return true;
