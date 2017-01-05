@@ -136,6 +136,7 @@ public:
 
   // Advancing front
   AdvancingFront *front_;
+  // head point used with advancing front
   Point *head_;
   // tail point used with advancing front
   Point *tail_;
