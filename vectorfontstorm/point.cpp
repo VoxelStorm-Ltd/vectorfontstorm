@@ -1,3 +1,6 @@
+}
+
+}
 #include "point.h"
 
 namespace vectorfontstorm {
