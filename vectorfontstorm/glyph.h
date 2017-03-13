@@ -28,10 +28,10 @@ class glyph {
   float advance = 0.0f;                                                         // how far the next glyph needs to advance
 
   bool whitespace = false;                                                      // whether this glyph is pure whitespace, i.e. nothing to draw
-  char character = '\0';                                                        // what ascii character this glyph represents
+  char32_t character = '\0';                                                    // what utf codepoint this glyph represents
 
 public:
-  glyph(char newchar, float newadvance);
+  glyph(char32_t newchar, float newadvance);
   ~glyph();
 
   void correct_winding();
@@ -50,7 +50,7 @@ public:
 #include "poly2tri/poly2tri.h"
 
 template<typename T>
-glyph<T>::glyph(char newchar, float newadvance)
+glyph<T>::glyph(char32_t newchar, float newadvance)
   : advance(newadvance),
     character(newchar) {
   /// Default constructor
@@ -73,12 +73,12 @@ void glyph<T>::correct_winding() {
     return;
   }
   #ifdef DEBUG_VECTORFONTSTORM
-    std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" correcting windings" << std::endl;
+    std::cout << "VectorFontStorm: DEBUG: Glyph \"" << static_cast<char>(character) << "\" (" << std::hex << character << std::dec << ") correcting windings" << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
   #ifdef DEBUG_VECTORFONTSTORM_DETAILED
     unsigned int i = 0;
     for(auto &c : contours) {
-      std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" contour " << i << " winding ";
+      std::cout << "VectorFontStorm: DEBUG: Glyph \"" << static_cast<char>(character) << "\" (" << std::hex << character << std::dec << ") contour " << i << " winding ";
       switch(c.get_winding()) {
       case contour<T>::windingtype::CLOCKWISE:
         std::cout << "clockwise" << std::endl;
@@ -109,9 +109,10 @@ void glyph<T>::cache_buffer() {
   /// Walk through the glyph's components and cache the outline it makes
   #ifdef DEBUG_VECTORFONTSTORM
     std::stringstream ss;
-    ss << "VectorFontStorm: Glyph \"" << character << "\" buffers cached in ";
+    ss.imbue(std::locale("C"));                                                 // prevent commas getting inserted
+    ss << "VectorFontStorm: DEBUG: Glyph \"" << static_cast<char>(character) << "\" (" << std::hex << character << std::dec << ") buffers cached in ";
     timestorm::timer<unsigned int> timer(ss.str());
-    std::cout << "VectorFontStorm: DEBUG: Glyph \"" << character << "\" with " << contours.size() << " contours" << std::endl;
+    std::cout << "VectorFontStorm: DEBUG: Glyph \"" << static_cast<char>(character) << "\" (" << std::hex << character << std::dec << ") with " << contours.size() << " contours" << std::endl;
   #endif // DEBUG_VECTORFONTSTORM
   for(auto const &c : contours) {
     c.get_outline(outline);

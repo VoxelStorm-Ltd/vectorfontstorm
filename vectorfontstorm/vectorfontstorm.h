@@ -1,6 +1,8 @@
 #ifndef VECTORFONTSTORM_H_INCLUDED
 #define VECTORFONTSTORM_H_INCLUDED
 
+/// 3D text vectorisation library with UTF8 support
+///
 /// Debugging defines:
 ///   DEBUG_VECTORFONTSTORM - show general debugging output and profiling info
 ///   DEBUG_VECTORFONTSTORM_DETAILED - show detailed data on the segment scale

@@ -4,6 +4,7 @@
 #include <string>
 #include <limits>
 #include <vector>
+#include <codecvt>
 #include "vectorstorm/vector/vector2.h"
 #include "vectorstorm/vector/vector3.h"
 #include "vectorstorm/quat/quat.h"
@@ -200,6 +201,9 @@ string<T>::~string() {
 template<typename T>
 void string<T>::init() {
   /// Initialise this string
+  #ifdef DEBUG_VECTORFONTSTORM
+    std::cout << "VectorFontStorm: DEBUG: Initialising string \"" << contents << "\"" << std::endl;
+  #endif // DEBUG_VECTORFONTSTORM
   outline.init();
   fill.init();
   back.init();
@@ -224,8 +228,11 @@ void string<T>::init() {
     GLuint index_to_edge      = 0;
   };
   std::vector<line> lines(1);
-  for(auto const &thischar : contents) {
-    if(thischar == '\n') {                                                      // handle newlines
+  for(char32_t const codepoint : std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().from_bytes(contents)) { // decode UTF8 to UTF32 characters
+    #ifdef DEBUG_VECTORFONTSTORM
+      std::cout << "VectorFontStorm: DEBUG: String adding glyph \"" << static_cast<char>(codepoint) << "\" (" << std::hex << codepoint << std::dec << ")" << std::endl;
+    #endif // DEBUG_VECTORFONTSTORM
+    if(codepoint == '\n') {                                                     // handle newlines
       lines.back().width = advance.x;
       lines.back().index_to_outline = cast_if_required<GLuint>(data_outline.vbo.size());
       lines.back().index_to_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
@@ -245,9 +252,9 @@ void string<T>::init() {
       GLuint vbo_start_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
       float new_advance;
       if(depth == 0.0f) {
-        new_advance = thisfont.get_outline_and_fill(thischar, data_outline, data_fill, data_back);
+        new_advance = thisfont.get_outline_and_fill(codepoint, data_outline, data_fill, data_back);
       } else {
-        new_advance = thisfont.get_outline_and_fill_and_edges(thischar, data_outline, data_fill, data_back, data_edge);
+        new_advance = thisfont.get_outline_and_fill_and_edges(codepoint, data_outline, data_fill, data_back, data_edge);
       }
       GLuint vbo_end_outline   = cast_if_required<GLuint>(data_outline.vbo.size());
       GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());

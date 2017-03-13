@@ -22,7 +22,7 @@ class font {
   double height = 1.0;                                                          // desired base height for this font
   double scale = 1.0;                                                           // internal scale factor to normalise height to 1.0
 
-  using glyph_map_type = std::unordered_map<char, glyph<T>>;
+  using glyph_map_type = std::unordered_map<char32_t, glyph<T>>;                // map of utf codepoints to glyphs
   using glyph_map_iterator_type = typename glyph_map_type::iterator;
   glyph_map_type glyphs;
 
@@ -33,19 +33,19 @@ public:
 
   double get_height() const __attribute__((__pure__));
 
-  float get_outline(                   char const thischar, buffer_data<T> &data_out);
-  float get_fill(                      char const thischar, buffer_data<T> &data_out);
-  float get_back(                      char const thischar, buffer_data<T> &data_out);
-  float get_edge(                      char const thischar, buffer_data<T> &data_out);
-  float get_outline_and_fill(          char const thischar, buffer_data<T> &data_out_outline,
-                                                            buffer_data<T> &data_out_fill,
-                                                            buffer_data<T> &data_out_back);
-  float get_outline_and_fill_and_edges(char const thischar, buffer_data<T> &data_out_outline,
-                                                            buffer_data<T> &data_out_fill,
-                                                            buffer_data<T> &data_out_back,
-                                                            buffer_data<T> &data_out_edge);
+  float get_outline(                   char32_t const thischar, buffer_data<T> &data_out);
+  float get_fill(                      char32_t const thischar, buffer_data<T> &data_out);
+  float get_back(                      char32_t const thischar, buffer_data<T> &data_out);
+  float get_edge(                      char32_t const thischar, buffer_data<T> &data_out);
+  float get_outline_and_fill(          char32_t const thischar, buffer_data<T> &data_out_outline,
+                                                                buffer_data<T> &data_out_fill,
+                                                                buffer_data<T> &data_out_back);
+  float get_outline_and_fill_and_edges(char32_t const thischar, buffer_data<T> &data_out_outline,
+                                                                buffer_data<T> &data_out_fill,
+                                                                buffer_data<T> &data_out_back,
+                                                                buffer_data<T> &data_out_edge);
 
-  glyph<T> &load_glyph_from_freetype(char const thischar, glyph_map_iterator_type &it);
+  glyph<T> &load_glyph_from_freetype(char32_t const thischar, glyph_map_iterator_type &it);
 };
 
 template<typename T>
@@ -136,7 +136,7 @@ double font<T>::get_height() const {
 }
 
 template<typename T>
-float font<T>::get_outline(char const thischar,
+float font<T>::get_outline(char32_t const thischar,
                            buffer_data<T> &data_out) {
   /// Output the vertices for this character's outline to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
@@ -145,7 +145,7 @@ float font<T>::get_outline(char const thischar,
   return thisglyph.get_advance();
 }
 template<typename T>
-float font<T>::get_fill(char const thischar,
+float font<T>::get_fill(char32_t const thischar,
                         buffer_data<T> &data_out) {
   /// Output the vertices for this character's fill to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
@@ -154,7 +154,7 @@ float font<T>::get_fill(char const thischar,
   return thisglyph.get_advance();
 }
 template<typename T>
-float font<T>::get_back(char const thischar,
+float font<T>::get_back(char32_t const thischar,
                         buffer_data<T> &data_out) {
   /// Output the vertices for this character's fill to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
@@ -163,7 +163,7 @@ float font<T>::get_back(char const thischar,
   return thisglyph.get_advance();
 }
 template<typename T>
-float font<T>::get_edge(char const thischar,
+float font<T>::get_edge(char32_t const thischar,
                         buffer_data<T> &data_out) {
   /// Output the vertices for this character's fill to an indexed buffer, and return the advance
   auto it = glyphs.find(thischar);
@@ -172,7 +172,7 @@ float font<T>::get_edge(char const thischar,
   return thisglyph.get_advance();
 }
 template<typename T>
-float font<T>::get_outline_and_fill(char const thischar,
+float font<T>::get_outline_and_fill(char32_t const thischar,
                                     buffer_data<T> &data_out_outline,
                                     buffer_data<T> &data_out_fill,
                                     buffer_data<T> &data_out_back) {
@@ -185,7 +185,7 @@ float font<T>::get_outline_and_fill(char const thischar,
   return thisglyph.get_advance();
 }
 template<typename T>
-float font<T>::get_outline_and_fill_and_edges(char const thischar,
+float font<T>::get_outline_and_fill_and_edges(char32_t const thischar,
                                               buffer_data<T> &data_out_outline,
                                               buffer_data<T> &data_out_fill,
                                               buffer_data<T> &data_out_back,
@@ -201,8 +201,8 @@ float font<T>::get_outline_and_fill_and_edges(char const thischar,
 }
 
 template<typename T>
-glyph<T> &font<T>::load_glyph_from_freetype(char const thischar, glyph_map_iterator_type &it) {
-  /// no glyph exists for this char yet, so construct and insert one
+glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_iterator_type &it) {
+  /// no glyph exists for this utf codepoint yet, so construct and insert one
   FT_UInt glyph_index = FT_Get_Char_Index(face, thischar);
   #ifdef DEBUG_VECTORFONTSTORM
     std::cout << "VectorFontStorm: DEBUG: glyph: " << thischar << " index " << glyph_index << std::endl;
