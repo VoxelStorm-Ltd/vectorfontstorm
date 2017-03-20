@@ -234,7 +234,7 @@ void string<T>::init() {
       #ifdef DEBUG_VECTORFONTSTORM
         std::cout << "VectorFontStorm: DEBUG: String adding glyph \"" << static_cast<char>(codepoint) << "\" (" << std::hex << codepoint << std::dec << ")" << std::endl;
       #endif // DEBUG_VECTORFONTSTORM
-      if(codepoint == '\n') {                                                     // handle newlines
+      if(codepoint == '\n') {                                                   // handle newlines
         lines.back().width = advance.x;
         lines.back().index_to_outline = cast_if_required<GLuint>(data_outline.vbo.size());
         lines.back().index_to_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
@@ -262,25 +262,25 @@ void string<T>::init() {
         GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());
         GLuint vbo_end_back      = cast_if_required<GLuint>(data_back.vbo.size());
         GLuint vbo_end_edge      = cast_if_required<GLuint>(data_edge.vbo.size());
-        for(GLuint p = vbo_start_outline; p != vbo_end_outline; ++p) {            // apply the previous advance to every point in this character, outline
+        for(GLuint p = vbo_start_outline; p != vbo_end_outline; ++p) {          // apply the previous advance to every point in this character, outline
           data_outline.vbo[p].coords.x += advance.x;
           data_outline.vbo[p].coords.y -= advance.y;
         }
-        for(GLuint p = vbo_start_fill; p != vbo_end_fill; ++p) {                  // apply the previous advance to every point in this character, filled front
+        for(GLuint p = vbo_start_fill; p != vbo_end_fill; ++p) {                // apply the previous advance to every point in this character, filled front
           data_fill.vbo[p].coords.x += advance.x;
           data_fill.vbo[p].coords.y -= advance.y;
         }
-        for(GLuint p = vbo_start_back; p != vbo_end_back; ++p) {                  // apply the previous advance to every point in this character, filled back
+        for(GLuint p = vbo_start_back; p != vbo_end_back; ++p) {                // apply the previous advance to every point in this character, filled back
           data_back.vbo[p].coords.x += advance.x;
           data_back.vbo[p].coords.y -= advance.y;
         }
-        for(GLuint p = vbo_start_edge; p != vbo_end_edge; ++p) {                  // apply the previous advance to every point in this character, filled edge
+        for(GLuint p = vbo_start_edge; p != vbo_end_edge; ++p) {                // apply the previous advance to every point in this character, filled edge
           data_edge.vbo[p].coords.x += advance.x;
           data_edge.vbo[p].coords.y -= advance.y;
         }
         advance.x += new_advance;
       }
-      advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
+      advance_max = std::max(advance_max, advance);                             // track the widest line for alignment
     }
   } catch(std::exception &e) {
     std::cout << "VectorFontStorm: ERROR: Exception converting string \"" << contents << "\": " << e.what() << std::endl;
