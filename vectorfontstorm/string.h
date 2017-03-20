@@ -228,57 +228,62 @@ void string<T>::init() {
     GLuint index_to_edge      = 0;
   };
   std::vector<line> lines(1);
-  for(char32_t const codepoint : std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().from_bytes(contents)) { // decode UTF8 to UTF32 characters
-    #ifdef DEBUG_VECTORFONTSTORM
-      std::cout << "VectorFontStorm: DEBUG: String adding glyph \"" << static_cast<char>(codepoint) << "\" (" << std::hex << codepoint << std::dec << ")" << std::endl;
-    #endif // DEBUG_VECTORFONTSTORM
-    if(codepoint == '\n') {                                                     // handle newlines
-      lines.back().width = advance.x;
-      lines.back().index_to_outline = cast_if_required<GLuint>(data_outline.vbo.size());
-      lines.back().index_to_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
-      lines.back().index_to_back    = cast_if_required<GLuint>(data_back.vbo.size());
-      lines.back().index_to_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
-      advance.y += line_height;
-      advance.x = 0.0f;
-      lines.emplace_back();
-      lines.back().index_from_outline = cast_if_required<GLuint>(data_outline.vbo.size());
-      lines.back().index_from_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
-      lines.back().index_from_back    = cast_if_required<GLuint>(data_back.vbo.size());
-      lines.back().index_from_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
-    } else {
-      GLuint vbo_start_outline = cast_if_required<GLuint>(data_outline.vbo.size());
-      GLuint vbo_start_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
-      GLuint vbo_start_back    = cast_if_required<GLuint>(data_back.vbo.size());
-      GLuint vbo_start_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
-      float new_advance;
-      if(depth == 0.0f) {
-        new_advance = thisfont.get_outline_and_fill(codepoint, data_outline, data_fill, data_back);
+  try {
+    //for(char32_t const codepoint : std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>("[ERROR]", L"[ERROR]").from_bytes(contents)) { // decode UTF8 to UTF32 characters
+    for(char32_t const codepoint : std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>("[ERROR]", U"[ERROR]").from_bytes(contents)) { // decode UTF8 to UTF32 characters
+      #ifdef DEBUG_VECTORFONTSTORM
+        std::cout << "VectorFontStorm: DEBUG: String adding glyph \"" << static_cast<char>(codepoint) << "\" (" << std::hex << codepoint << std::dec << ")" << std::endl;
+      #endif // DEBUG_VECTORFONTSTORM
+      if(codepoint == '\n') {                                                     // handle newlines
+        lines.back().width = advance.x;
+        lines.back().index_to_outline = cast_if_required<GLuint>(data_outline.vbo.size());
+        lines.back().index_to_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
+        lines.back().index_to_back    = cast_if_required<GLuint>(data_back.vbo.size());
+        lines.back().index_to_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
+        advance.y += line_height;
+        advance.x = 0.0f;
+        lines.emplace_back();
+        lines.back().index_from_outline = cast_if_required<GLuint>(data_outline.vbo.size());
+        lines.back().index_from_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
+        lines.back().index_from_back    = cast_if_required<GLuint>(data_back.vbo.size());
+        lines.back().index_from_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
       } else {
-        new_advance = thisfont.get_outline_and_fill_and_edges(codepoint, data_outline, data_fill, data_back, data_edge);
+        GLuint vbo_start_outline = cast_if_required<GLuint>(data_outline.vbo.size());
+        GLuint vbo_start_fill    = cast_if_required<GLuint>(data_fill.vbo.size());
+        GLuint vbo_start_back    = cast_if_required<GLuint>(data_back.vbo.size());
+        GLuint vbo_start_edge    = cast_if_required<GLuint>(data_edge.vbo.size());
+        float new_advance;
+        if(depth == 0.0f) {
+          new_advance = thisfont.get_outline_and_fill(codepoint, data_outline, data_fill, data_back);
+        } else {
+          new_advance = thisfont.get_outline_and_fill_and_edges(codepoint, data_outline, data_fill, data_back, data_edge);
+        }
+        GLuint vbo_end_outline   = cast_if_required<GLuint>(data_outline.vbo.size());
+        GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());
+        GLuint vbo_end_back      = cast_if_required<GLuint>(data_back.vbo.size());
+        GLuint vbo_end_edge      = cast_if_required<GLuint>(data_edge.vbo.size());
+        for(GLuint p = vbo_start_outline; p != vbo_end_outline; ++p) {            // apply the previous advance to every point in this character, outline
+          data_outline.vbo[p].coords.x += advance.x;
+          data_outline.vbo[p].coords.y -= advance.y;
+        }
+        for(GLuint p = vbo_start_fill; p != vbo_end_fill; ++p) {                  // apply the previous advance to every point in this character, filled front
+          data_fill.vbo[p].coords.x += advance.x;
+          data_fill.vbo[p].coords.y -= advance.y;
+        }
+        for(GLuint p = vbo_start_back; p != vbo_end_back; ++p) {                  // apply the previous advance to every point in this character, filled back
+          data_back.vbo[p].coords.x += advance.x;
+          data_back.vbo[p].coords.y -= advance.y;
+        }
+        for(GLuint p = vbo_start_edge; p != vbo_end_edge; ++p) {                  // apply the previous advance to every point in this character, filled edge
+          data_edge.vbo[p].coords.x += advance.x;
+          data_edge.vbo[p].coords.y -= advance.y;
+        }
+        advance.x += new_advance;
       }
-      GLuint vbo_end_outline   = cast_if_required<GLuint>(data_outline.vbo.size());
-      GLuint vbo_end_fill      = cast_if_required<GLuint>(data_fill.vbo.size());
-      GLuint vbo_end_back      = cast_if_required<GLuint>(data_back.vbo.size());
-      GLuint vbo_end_edge      = cast_if_required<GLuint>(data_edge.vbo.size());
-      for(GLuint p = vbo_start_outline; p != vbo_end_outline; ++p) {            // apply the previous advance to every point in this character, outline
-        data_outline.vbo[p].coords.x += advance.x;
-        data_outline.vbo[p].coords.y -= advance.y;
-      }
-      for(GLuint p = vbo_start_fill; p != vbo_end_fill; ++p) {                  // apply the previous advance to every point in this character, filled front
-        data_fill.vbo[p].coords.x += advance.x;
-        data_fill.vbo[p].coords.y -= advance.y;
-      }
-      for(GLuint p = vbo_start_back; p != vbo_end_back; ++p) {                  // apply the previous advance to every point in this character, filled back
-        data_back.vbo[p].coords.x += advance.x;
-        data_back.vbo[p].coords.y -= advance.y;
-      }
-      for(GLuint p = vbo_start_edge; p != vbo_end_edge; ++p) {                  // apply the previous advance to every point in this character, filled edge
-        data_edge.vbo[p].coords.x += advance.x;
-        data_edge.vbo[p].coords.y -= advance.y;
-      }
-      advance.x += new_advance;
+      advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
     }
-    advance_max = std::max(advance_max, advance);                               // track the widest line for alignment
+  } catch(std::exception &e) {
+    std::cout << "VectorFontStorm: ERROR: Exception converting string \"" << contents << "\": " << e.what() << std::endl;
   }
   lines.back().width = advance.x;
   lines.back().index_to_outline = cast_if_required<GLuint>(data_outline.vbo.size());
