@@ -71,7 +71,7 @@ public:
 
   AdvancingFront(Node &head, Node &tail);
   // Destructor
-  ~AdvancingFront() __attribute__((__const__));
+  ~AdvancingFront();
 
   Node *head();
   void set_head(Node *node);

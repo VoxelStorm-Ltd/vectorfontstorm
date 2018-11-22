@@ -17,7 +17,7 @@ struct buffer {
   GLuint num_verts = 0;                                                         // number of vertices in the VBO
 
   buffer();
-  ~buffer() __attribute__((__const__));
+  ~buffer();
   void swap(buffer<T> &other);
 
   void init();
