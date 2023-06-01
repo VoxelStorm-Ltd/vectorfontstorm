@@ -5,8 +5,15 @@ This library was developed for the 3D text prominently used in [sphereFACE](http
 
 It produces optimal triangulated 3D polygon models of text from arbitrary fonts, using delaunay triangulation in 2D, and extrusion in 3D.
 
+This is a legacy project that is not currently maintained, having been split out from a larger game codebase, but is provided in the hope it will be useful to someone.  The code has not been reviewed for many years and is not of the best quality.  Pull requests welcome.
+
 ## Dependencies
+- Freetype2
+- OpenGL
+- GLFW (probably not actually required - just the includes need to be cleaned up)
+- GLEW (probably not actually required - just the includes need to be cleaned up)
 - [poly2tri](https://github.com/jhasse/poly2tri) (included) - 2D constrained Delaunay triangulation library
+- [timestorm](https://github.com/VoxelStorm-Ltd/timestorm) - for diagnostics only, should be made optional
 
 ## Usage
 
