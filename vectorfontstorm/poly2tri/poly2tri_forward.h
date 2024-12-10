@@ -1,5 +1,4 @@
-#ifndef POLY2TRI_FORWARD_H_INCLUDED
-#define POLY2TRI_FORWARD_H_INCLUDED
+#pragma once
 
 namespace p2t {
 
@@ -8,5 +7,3 @@ struct Edge;
 class Triangle;
 
 }
-
-#endif // POLY2TRI_FORWARD_H_INCLUDED

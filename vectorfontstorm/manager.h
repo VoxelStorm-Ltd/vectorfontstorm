@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_MANAGER_H_INCLUDED
-#define VECTORFONTSTORM_MANAGER_H_INCLUDED
+#pragma once
 
 #include "font.h"
 
@@ -15,5 +14,3 @@ public:
 };
 
 }
-
-#endif // VECTORFONTSTORM_MANAGER_H_INCLUDED

@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_GLYPH_H_INCLUDED
-#define VECTORFONTSTORM_GLYPH_H_INCLUDED
+#pragma once
 
 #include <boost/range/iterator_range.hpp>
 #include "buffer_data.h"
@@ -234,5 +233,3 @@ void glyph<T>::get_edge(buffer_data<T> &data_out) {
 }
 
 }
-
-#endif // VECTORFONTSTORM_GLYPH_H_INCLUDED

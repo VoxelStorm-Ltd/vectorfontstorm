@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_POINT_H_INCLUDED
-#define VECTORFONTSTORM_POINT_H_INCLUDED
+#pragma once
 
 #include "vectorstorm/vector/vector2.h"
 
@@ -24,5 +23,3 @@ public:
 };
 
 }
-
-#endif // VECTORFONTSTORM_POINT_H_INCLUDED

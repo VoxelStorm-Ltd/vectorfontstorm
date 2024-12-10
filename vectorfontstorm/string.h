@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_STRING_H_INCLUDED
-#define VECTORFONTSTORM_STRING_H_INCLUDED
+#pragma once
 
 #include <string>
 #include <limits>
@@ -490,5 +489,3 @@ aabb3f string<T>::get_bounds_3d() const {
 }
 
 }
-
-#endif // VECTORFONTSTORM_STRING_H_INCLUDED

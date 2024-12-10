@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_FORWARD_H_INCLUDED
-#define VECTORFONTSTORM_FORWARD_H_INCLUDED
+#pragma once
 
 namespace vectorfontstorm {
 
@@ -15,5 +14,3 @@ template<typename T> class segment;
 template<typename T> class string;
 
 }
-
-#endif // VECTORFONTSTORM_FORWARD_H_INCLUDED

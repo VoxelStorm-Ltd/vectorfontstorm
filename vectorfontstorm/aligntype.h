@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_ALIGNTYPE_INCLUDED
-#define VECTORFONTSTORM_ALIGNTYPE_INCLUDED
+#pragma once
 
 namespace vectorfontstorm {
 
@@ -16,5 +15,3 @@ enum class aligntype {
 };
 
 }
-
-#endif // VECTORFONTSTORM_ALIGNTYPE_INCLUDED

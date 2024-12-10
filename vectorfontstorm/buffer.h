@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_BUFFER_H_INCLUDED
-#define VECTORFONTSTORM_BUFFER_H_INCLUDED
+#pragma once
 
 #include <iostream>
 #include <GL/glew.h>
@@ -100,5 +99,3 @@ void buffer<T>::upload(buffer_data<T> const &data) {
 }
 
 }
-
-#endif // VECTORFONTSTORM_BUFFER_H_INCLUDED

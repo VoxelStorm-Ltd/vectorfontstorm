@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_SEGMENT_H_INCLUDED
-#define VECTORFONTSTORM_SEGMENT_H_INCLUDED
+#pragma once
 
 #include <vector>
 #include <GL/glew.h>
@@ -251,5 +250,3 @@ void segment<T>::reverse() {
 }
 
 }
-
-#endif // VECTORFONTSTORM_SEGMENT_H_INCLUDED

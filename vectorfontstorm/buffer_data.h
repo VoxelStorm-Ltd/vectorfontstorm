@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_BUFFER_DATA_H_INCLUDED
-#define VECTORFONTSTORM_BUFFER_DATA_H_INCLUDED
+#pragma once
 
 #include <vector>
 #include <GL/glew.h>
@@ -27,5 +26,3 @@ buffer_data<T>::~buffer_data() {
 }
 
 }
-
-#endif // VECTORFONTSTORM_BUFFER_DATA_H_INCLUDED

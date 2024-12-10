@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_FONT_H_INCLUDED
-#define VECTORFONTSTORM_FONT_H_INCLUDED
+#pragma once
 
 #include <cstddef>
 #include <unordered_map>
@@ -362,5 +361,3 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
 }
 
 }
-
-#endif // VECTORFONTSTORM_FONT_H_INCLUDED

@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_H_INCLUDED
-#define VECTORFONTSTORM_H_INCLUDED
+#pragma once
 
 /// 3D text vectorisation library with UTF8 support
 ///
@@ -16,5 +15,3 @@
 #include "glyph.h"
 #include "font.h"
 #include "string.h"
-
-#endif // VECTORFONTSTORM_H_INCLUDED

@@ -1,5 +1,4 @@
-#ifndef POLY2TRI_POLYLINETYPE_H_INCLUDED
-#define POLY2TRI_POLYLINETYPE_H_INCLUDED
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -13,5 +12,3 @@ struct Point;
 using polylinetype = std::vector<std::shared_ptr<Point>>;
 
 }
-
-#endif // POLY2TRI_POLYLINETYPE_H_INCLUDED

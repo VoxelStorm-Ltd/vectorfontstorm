@@ -1,5 +1,4 @@
-#ifndef VECTORFONTSTORM_CONTOUR_H_INCLUDED
-#define VECTORFONTSTORM_CONTOUR_H_INCLUDED
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -199,5 +198,3 @@ void contour<T>::reverse() {
 }
 
 }
-
-#endif // VECTORFONTSTORM_CONTOUR_H_INCLUDED
