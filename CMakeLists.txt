@@ -58,5 +58,7 @@ target_link_libraries(vectorfontstorm_lib PUBLIC
 # ---------------------------------------------------------------------------
 option(ENABLE_COVERAGE "Enable gcov/lcov code-coverage instrumentation" OFF)
 
-enable_testing()
-add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()

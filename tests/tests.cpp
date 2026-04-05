@@ -20,6 +20,7 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include <memory>
 #include <string>
 
 // Pull in library headers – deliberately exclude string.h and buffer.h so
@@ -361,8 +362,13 @@ TEST_CASE("font: combined get_outline_and_fill populates all three buffers", "[f
   CHECK_FALSE(outline.vbo.empty());
   CHECK_FALSE(fill.vbo.empty());
   CHECK_FALSE(back.vbo.empty());
-  // Outline and fill sizes should differ (outline = line segments, fill = tris)
-  CHECK(fill.vbo.size() != outline.vbo.size());
+  CHECK_FALSE(outline.ibo.empty());
+  CHECK_FALSE(fill.ibo.empty());
+  CHECK_FALSE(back.ibo.empty());
+  // Outline indices form line segments; fill/back indices form triangles.
+  CHECK(outline.ibo.size() % 2 == 0);
+  CHECK(fill.ibo.size() % 3 == 0);
+  CHECK(back.ibo.size() % 3 == 0);
 }
 
 TEST_CASE("font: combined get_outline_and_fill_and_edges populates all four buffers", "[font][integration]") {
