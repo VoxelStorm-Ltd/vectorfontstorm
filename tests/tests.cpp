@@ -39,7 +39,8 @@ struct TestVertex {
 };
 
 // ---------------------------------------------------------------------------
-// Helper: load a font file into a byte buffer
+// Helper: load a font file into a byte buffer.
+// Returns an empty vector if the file cannot be opened or read.
 // ---------------------------------------------------------------------------
 static std::vector<unsigned char> load_font_file(char const *path) {
   std::ifstream f(path, std::ios::binary | std::ios::ate);
@@ -203,7 +204,9 @@ TEST_CASE("glyph get_buffer copies data with correct index offsets", "[glyph]") 
 #define TEST_FONT_PATH ""
 #endif
 
-/// RAII wrapper so the font bytes live as long as the font object.
+/// RAII wrapper that owns both the raw font bytes and the font object.
+/// Both must be kept alive together: font<T> stores a pointer into the byte
+/// buffer passed to its constructor, so the buffer must outlive the font.
 struct FontFixture {
   std::vector<unsigned char> bytes;
   vectorfontstorm::font<TestVertex> *f = nullptr;
