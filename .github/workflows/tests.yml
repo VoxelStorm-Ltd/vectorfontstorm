@@ -28,7 +28,7 @@ jobs:
 
       - name: Configure (with coverage)
         run: |
-          cmake -B build \
+          cmake -S tests -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DENABLE_COVERAGE=ON
