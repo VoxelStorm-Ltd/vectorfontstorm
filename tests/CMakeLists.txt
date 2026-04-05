@@ -11,6 +11,20 @@ FetchContent_Declare(Catch2
 FetchContent_MakeAvailable(Catch2)
 
 # ---------------------------------------------------------------------------
+# cast_if_required – safe numeric cast helper (no CMakeLists.txt; use Populate)
+# Shared across VoxelStorm projects; header-only, lives in the repo root.
+# ---------------------------------------------------------------------------
+FetchContent_Declare(cast_if_required
+  GIT_REPOSITORY https://github.com/VoxelStorm-Ltd/cast_if_required.git
+  GIT_TAG        0237e7df3a25b5c34edb864ac20eb7e98d3f24cc
+  GIT_SHALLOW    FALSE
+)
+FetchContent_GetProperties(cast_if_required)
+if(NOT cast_if_required_POPULATED)
+  FetchContent_Populate(cast_if_required)
+endif()
+
+# ---------------------------------------------------------------------------
 # vectorstorm – header-only math library (no CMakeLists.txt; use Populate)
 # This library is an intended dependency of vectorfontstorm and provides the
 # vector2, vector3 etc. types used throughout the geometry pipeline.
@@ -80,8 +94,9 @@ target_compile_definitions(vectorfontstorm_tests PRIVATE
 )
 
 target_include_directories(vectorfontstorm_tests PRIVATE
-  ${CMAKE_SOURCE_DIR}          # top-level: exposes "vectorfontstorm/*.h" and "cast_if_required.h"
-  ${vectorstorm_SOURCE_DIR}    # vectorstorm headers (vector2f, vector3f, etc.)
+  ${CMAKE_SOURCE_DIR}                  # top-level: exposes "vectorfontstorm/*.h"
+  ${cast_if_required_SOURCE_DIR}       # cast_if_required.h
+  ${vectorstorm_SOURCE_DIR}            # vectorstorm headers (vector2f, vector3f, etc.)
 )
 
 target_link_libraries(vectorfontstorm_tests PRIVATE
