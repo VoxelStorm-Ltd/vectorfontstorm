@@ -11,6 +11,20 @@ FetchContent_Declare(Catch2
 FetchContent_MakeAvailable(Catch2)
 
 # ---------------------------------------------------------------------------
+# vectorstorm – header-only math library (no CMakeLists.txt; use Populate)
+# This library is an intended dependency of vectorfontstorm and provides the
+# vector2, vector3 etc. types used throughout the geometry pipeline.
+# ---------------------------------------------------------------------------
+FetchContent_Declare(vectorstorm
+  GIT_REPOSITORY https://github.com/VoxelStorm-Ltd/vectorstorm.git
+  GIT_TAG        d2c319bb6d5ba47ddb0f5ad671a5ae9c920542d8
+)
+FetchContent_GetProperties(vectorstorm)
+if(NOT vectorstorm_POPULATED)
+  FetchContent_Populate(vectorstorm)
+endif()
+
+# ---------------------------------------------------------------------------
 # System dependencies
 # FreeType2 is required to load and rasterise font outlines.
 # GLEW, GLFW, and Boost are expected to be installed system-wide
@@ -28,16 +42,6 @@ add_library(poly2tri STATIC
   ${CMAKE_SOURCE_DIR}/vectorfontstorm/poly2tri/sweep/sweep.cc
   ${CMAKE_SOURCE_DIR}/vectorfontstorm/poly2tri/sweep/sweep_context.cc
 )
-
-# ---------------------------------------------------------------------------
-# Minimal vectorstorm stub headers
-# The full vectorstorm library (VoxelStorm-Ltd/vectorstorm) has GCC 13 /
-# C++17 incompatibilities in headers that are not exercised by the
-# vectorfontstorm geometry pipeline (constexpr sincos, C++23 operator[],
-# boost::math constants).  A minimal stub is provided that defines only the
-# vector2f type required by the core library.
-# ---------------------------------------------------------------------------
-set(VECTORSTORM_STUBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/stubs)
 
 # ---------------------------------------------------------------------------
 # Locate a TrueType font for integration tests.
@@ -77,7 +81,7 @@ target_compile_definitions(vectorfontstorm_tests PRIVATE
 
 target_include_directories(vectorfontstorm_tests PRIVATE
   ${CMAKE_SOURCE_DIR}          # top-level: exposes "vectorfontstorm/*.h" and "cast_if_required.h"
-  ${VECTORSTORM_STUBS_DIR}     # minimal vectorstorm stubs (must precede any full vectorstorm install)
+  ${vectorstorm_SOURCE_DIR}    # vectorstorm headers (vector2f, vector3f, etc.)
 )
 
 target_link_libraries(vectorfontstorm_tests PRIVATE
@@ -99,6 +103,9 @@ endif()
 
 # ---------------------------------------------------------------------------
 # Register with CTest
+# Explicitly add the Catch2 extras directory so that include(Catch) can find
+# Catch.cmake regardless of how CMake_MODULE_PATH was configured.
 # ---------------------------------------------------------------------------
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
 catch_discover_tests(vectorfontstorm_tests)

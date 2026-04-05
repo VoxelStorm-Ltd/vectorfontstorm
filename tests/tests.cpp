@@ -347,6 +347,9 @@ TEST_CASE("font: glyph caching returns identical data on repeated calls", "[font
     CHECK(first.vbo[i].y == Catch::Approx(second.vbo[i].y));
     CHECK(first.vbo[i].z == Catch::Approx(second.vbo[i].z));
   }
+  for(std::size_t i = 0; i < first.ibo.size(); ++i) {
+    CHECK(first.ibo[i] == second.ibo[i]);
+  }
 }
 
 TEST_CASE("font: combined get_outline_and_fill populates all three buffers", "[font][integration]") {
