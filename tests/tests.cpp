@@ -45,10 +45,13 @@ struct TestVertex {
 static std::vector<unsigned char> load_font_file(char const *path) {
   std::ifstream f(path, std::ios::binary | std::ios::ate);
   if(!f) return {};
-  auto size = static_cast<std::size_t>(f.tellg());
-  f.seekg(0);
+  auto end = f.tellg();
+  if(end <= 0) return {};
+  auto size = static_cast<std::size_t>(end);
+  f.seekg(0, std::ios::beg);
+  if(!f) return {};
   std::vector<unsigned char> buf(size);
-  f.read(reinterpret_cast<char *>(buf.data()), static_cast<std::streamsize>(size));
+  if(!f.read(reinterpret_cast<char *>(buf.data()), static_cast<std::streamsize>(size))) return {};
   return buf;
 }
 
@@ -209,14 +212,13 @@ TEST_CASE("glyph get_buffer copies data with correct index offsets", "[glyph]") 
 /// buffer passed to its constructor, so the buffer must outlive the font.
 struct FontFixture {
   std::vector<unsigned char> bytes;
-  vectorfontstorm::font<TestVertex> *f = nullptr;
+  std::unique_ptr<vectorfontstorm::font<TestVertex>> f;
 
   explicit FontFixture(double height = 1.0) {
     bytes = load_font_file(TEST_FONT_PATH);
     REQUIRE_FALSE(bytes.empty());
-    f = new vectorfontstorm::font<TestVertex>(bytes.data(), bytes.size(), height);
+    f = std::make_unique<vectorfontstorm::font<TestVertex>>(bytes.data(), bytes.size(), height);
   }
-  ~FontFixture() { delete f; }
   vectorfontstorm::font<TestVertex> &font() { return *f; }
 };
 
