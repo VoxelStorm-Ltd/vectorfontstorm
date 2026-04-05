@@ -1,4 +1,6 @@
 # VectorFontStorm
+[![Tests](https://github.com/VoxelStorm-Ltd/vectorfontstorm/actions/workflows/tests.yml/badge.svg)](https://github.com/VoxelStorm-Ltd/vectorfontstorm/actions/workflows/tests.yml)
+
 C++ vector font rendering library for OpenGL 3D text drawing, by VoxelStorm.
 
 This library was developed for the 3D text prominently used in [sphereFACE](http://sphereface.com).
