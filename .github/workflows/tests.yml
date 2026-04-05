@@ -1,0 +1,67 @@
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    name: Build and run tests (Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            libfreetype-dev \
+            libglew-dev \
+            libglfw3-dev \
+            libboost-dev \
+            fonts-dejavu-core \
+            lcov
+
+      - name: Configure (with coverage)
+        run: |
+          cmake -S tests -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Collect coverage data
+        run: |
+          lcov \
+            --capture \
+            --directory build \
+            --output-file build/coverage.info \
+            --ignore-errors mismatch
+          # Strip third-party and system paths.
+          # --ignore-errors unused prevents lcov from erroring when a pattern
+          # does not match any file (can happen with different lcov versions).
+          lcov \
+            --remove build/coverage.info \
+              '/usr/*' \
+              '*/tests/*' \
+              '*/catch2-src/*' \
+              '*/vectorstorm*/*' \
+            --output-file build/coverage_filtered.info \
+            --ignore-errors unused
+          lcov --list build/coverage_filtered.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/coverage_filtered.info
+          fail_ci_if_error: false
