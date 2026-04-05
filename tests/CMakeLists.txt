@@ -55,13 +55,12 @@ if(NOT vectorstorm_POPULATED)
   FetchContent_Populate(vectorstorm)
   # GCC 13 rejects uninitialized scalar variables in constexpr functions.
   # vectorstorm/sincos.h declares two float temporaries without initializers;
-  # patch them in-place so the build succeeds on modern compilers.
-  execute_process(
-    COMMAND sed -i
-      "s/float out_sin_temp;/float out_sin_temp = 0.0f;/g;s/float out_cos_temp;/float out_cos_temp = 0.0f;/g"
-      vectorstorm/sincos.h
-    WORKING_DIRECTORY ${vectorstorm_SOURCE_DIR}
-  )
+  # patch them using CMake string replacement (portable, idempotent).
+  file(READ "${vectorstorm_SOURCE_DIR}/vectorstorm/sincos.h" _sincos_content)
+  string(REPLACE "float out_sin_temp;" "float out_sin_temp = 0.0f;" _sincos_content "${_sincos_content}")
+  string(REPLACE "float out_cos_temp;" "float out_cos_temp = 0.0f;" _sincos_content "${_sincos_content}")
+  file(WRITE "${vectorstorm_SOURCE_DIR}/vectorstorm/sincos.h" "${_sincos_content}")
+  unset(_sincos_content)
 endif()
 
 # ---------------------------------------------------------------------------
