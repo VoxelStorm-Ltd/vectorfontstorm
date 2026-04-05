@@ -11,32 +11,30 @@
 /// segfault without one.  The geometry-generation path they rely on is
 /// covered by the font integration tests.
 
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <catch2/matchers/catch_matchers_range_equals.hpp>
-
 #include <cstdio>
 #include <cstring>
 #include <fstream>
-#include <vector>
 #include <memory>
 #include <string>
-
+#include <vector>
 // Pull in library headers – deliberately exclude string.h and buffer.h so
 // that no OpenGL call-sites are instantiated.
 #include "vectorfontstorm/aligntype.h"
 #include "vectorfontstorm/buffer_data.h"
-#include "vectorfontstorm/glyph.h"
 #include "vectorfontstorm/font.h"
+#include "vectorfontstorm/glyph.h"
 
 // ---------------------------------------------------------------------------
 // Minimal vertex type that satisfies the (float, float, float) constructor
 // requirement used throughout the library's geometry-generation templates.
 // ---------------------------------------------------------------------------
-struct TestVertex {
+struct test_vertex {
   float x, y, z;
-  TestVertex(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+  test_vertex(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
 };
 
 // ---------------------------------------------------------------------------
@@ -46,9 +44,9 @@ struct TestVertex {
 static std::vector<unsigned char> load_font_file(char const *path) {
   std::ifstream f(path, std::ios::binary | std::ios::ate);
   if(!f) return {};
-  auto end = f.tellg();
+  auto const end{f.tellg()};
   if(end <= 0) return {};
-  auto size = static_cast<std::size_t>(end);
+  size_t const size{static_cast<size_t>(end)};
   f.seekg(0, std::ios::beg);
   if(!f) return {};
   std::vector<unsigned char> buf(size);
@@ -71,8 +69,8 @@ TEST_CASE("aligntype enum has expected values", "[aligntype]") {
   CHECK(aligntype::BOTTOM     != aligntype::BOTTOMRIGHT);
 
   // Verify they can be used in a switch without compile error
-  aligntype a = aligntype::CENTRE;
-  bool reached = false;
+  aligntype a{aligntype::CENTRE};
+  bool reached{false};
   switch(a) {
   case aligntype::TOPLEFT:    break;
   case aligntype::TOP:        break;
@@ -91,13 +89,13 @@ TEST_CASE("aligntype enum has expected values", "[aligntype]") {
 // buffer_data
 // ---------------------------------------------------------------------------
 TEST_CASE("buffer_data default construction yields empty containers", "[buffer_data]") {
-  vectorfontstorm::buffer_data<TestVertex> bd;
+  vectorfontstorm::buffer_data<test_vertex> bd;
   CHECK(bd.vbo.empty());
   CHECK(bd.ibo.empty());
 }
 
 TEST_CASE("buffer_data can store vertices and indices", "[buffer_data]") {
-  vectorfontstorm::buffer_data<TestVertex> bd;
+  vectorfontstorm::buffer_data<test_vertex> bd;
 
   bd.vbo.emplace_back(1.0f, 2.0f, 3.0f);
   bd.vbo.emplace_back(4.0f, 5.0f, 6.0f);
@@ -114,11 +112,11 @@ TEST_CASE("buffer_data can store vertices and indices", "[buffer_data]") {
 }
 
 TEST_CASE("buffer_data is independently copyable", "[buffer_data]") {
-  vectorfontstorm::buffer_data<TestVertex> src;
+  vectorfontstorm::buffer_data<test_vertex> src;
   src.vbo.emplace_back(0.0f, 1.0f, 2.0f);
   src.ibo.push_back(0);
 
-  auto dst = src;   // copy
+  auto dst{src};   // copy
   REQUIRE(dst.vbo.size() == 1);
   REQUIRE(dst.ibo.size() == 1);
 
@@ -131,23 +129,23 @@ TEST_CASE("buffer_data is independently copyable", "[buffer_data]") {
 // glyph – direct unit tests (geometry is exercised via font below)
 // ---------------------------------------------------------------------------
 TEST_CASE("glyph get_advance returns the value given at construction", "[glyph]") {
-  vectorfontstorm::glyph<TestVertex> g(U'A', 0.75f);
+  vectorfontstorm::glyph<test_vertex> g(U'A', 0.75f);
   CHECK(g.get_advance() == Catch::Approx(0.75f));
 }
 
 TEST_CASE("glyph with zero advance", "[glyph]") {
-  vectorfontstorm::glyph<TestVertex> g(U' ', 0.0f);
+  vectorfontstorm::glyph<test_vertex> g(U' ', 0.0f);
   CHECK(g.get_advance() == Catch::Approx(0.0f));
 }
 
 TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
-  vectorfontstorm::glyph<TestVertex> g(U'X', 0.5f);
+  vectorfontstorm::glyph<test_vertex> g(U'X', 0.5f);
   // No contours have been added; correct_winding should detect this and set
   // the internal whitespace flag.  After that, all get_* methods should
   // return nothing.
   g.correct_winding();
 
-  vectorfontstorm::buffer_data<TestVertex> data;
+  vectorfontstorm::buffer_data<test_vertex> data;
   g.get_outline(data);
   g.get_fill(data);
   g.get_back(data);
@@ -158,10 +156,10 @@ TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
 }
 
 TEST_CASE("glyph cache_buffer on empty glyph leaves data empty", "[glyph]") {
-  vectorfontstorm::glyph<TestVertex> g(U'Y', 0.4f);
+  vectorfontstorm::glyph<test_vertex> g(U'Y', 0.4f);
   g.cache_buffer();
 
-  vectorfontstorm::buffer_data<TestVertex> out;
+  vectorfontstorm::buffer_data<test_vertex> out;
   g.get_fill(out);
   CHECK(out.vbo.empty());
 }
@@ -169,9 +167,9 @@ TEST_CASE("glyph cache_buffer on empty glyph leaves data empty", "[glyph]") {
 TEST_CASE("glyph get_buffer copies data with correct index offsets", "[glyph]") {
   // get_buffer is public and can be exercised directly with pre-populated
   // data_in / data_out – this tests the index-offset logic.
-  vectorfontstorm::glyph<TestVertex> g(U'A', 0.5f);
+  vectorfontstorm::glyph<test_vertex> g(U'A', 0.5f);
 
-  vectorfontstorm::buffer_data<TestVertex> src;
+  vectorfontstorm::buffer_data<test_vertex> src;
   src.vbo.emplace_back(0.1f, 0.2f, 0.0f);
   src.vbo.emplace_back(0.3f, 0.4f, 0.0f);
   src.vbo.emplace_back(0.5f, 0.6f, 0.0f);
@@ -179,7 +177,7 @@ TEST_CASE("glyph get_buffer copies data with correct index offsets", "[glyph]") 
   src.ibo.push_back(1);
   src.ibo.push_back(2);
 
-  vectorfontstorm::buffer_data<TestVertex> dst;
+  vectorfontstorm::buffer_data<test_vertex> dst;
   // Pre-populate dst with two existing vertices so the offset matters
   dst.vbo.emplace_back(10.0f, 10.0f, 0.0f);
   dst.vbo.emplace_back(11.0f, 11.0f, 0.0f);
@@ -211,16 +209,16 @@ TEST_CASE("glyph get_buffer copies data with correct index offsets", "[glyph]") 
 /// RAII wrapper that owns both the raw font bytes and the font object.
 /// Both must be kept alive together: font<T> stores a pointer into the byte
 /// buffer passed to its constructor, so the buffer must outlive the font.
-struct FontFixture {
+struct font_fixture {
   std::vector<unsigned char> bytes;
-  std::unique_ptr<vectorfontstorm::font<TestVertex>> f;
+  std::unique_ptr<vectorfontstorm::font<test_vertex>> f;
 
-  explicit FontFixture(double height = 1.0) {
+  explicit font_fixture(double height = 1.0) {
     bytes = load_font_file(TEST_FONT_PATH);
     REQUIRE_FALSE(bytes.empty());
-    f = std::make_unique<vectorfontstorm::font<TestVertex>>(bytes.data(), bytes.size(), height);
+    f = std::make_unique<vectorfontstorm::font<test_vertex>>(bytes.data(), bytes.size(), height);
   }
-  vectorfontstorm::font<TestVertex> &font() { return *f; }
+  vectorfontstorm::font<test_vertex> &font() { return *f; }
 };
 
 TEST_CASE("font: height", "[font][integration]") {
@@ -228,13 +226,13 @@ TEST_CASE("font: height", "[font][integration]") {
     SKIP("No test font available (set TEST_FONT_PATH)");
   }
   SECTION("default height is 1.0") {
-    std::vector<unsigned char> bytes = load_font_file(TEST_FONT_PATH);
+    std::vector<unsigned char> bytes{load_font_file(TEST_FONT_PATH)};
     REQUIRE_FALSE(bytes.empty());
-    vectorfontstorm::font<TestVertex> f(bytes.data(), bytes.size());
+    vectorfontstorm::font<test_vertex> f(bytes.data(), bytes.size());
     CHECK(f.get_height() == Catch::Approx(1.0));
   }
   SECTION("configured height is returned") {
-    FontFixture fx(2.5);
+    font_fixture fx(2.5);
     CHECK(fx.font().get_height() == Catch::Approx(2.5));
   }
 }
@@ -243,11 +241,11 @@ TEST_CASE("font: get_outline produces non-empty line data for printable chars", 
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
   for(char32_t ch : std::u32string{U'A', U'B', U'H', U'I', U'Z', U'1', U'8'}) {
-    vectorfontstorm::buffer_data<TestVertex> data;
-    float advance = fx.font().get_outline(ch, data);
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_outline(ch, data)};
     INFO("Character: " << static_cast<char>(ch));
     CHECK(advance > 0.0f);
     CHECK_FALSE(data.vbo.empty());
@@ -261,11 +259,11 @@ TEST_CASE("font: get_fill produces triangulated front face", "[font][integration
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
   for(char32_t ch : std::u32string{U'A', U'O', U'B', U'8'}) {
-    vectorfontstorm::buffer_data<TestVertex> data;
-    float advance = fx.font().get_fill(ch, data);
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_fill(ch, data)};
     INFO("Character: " << static_cast<char>(ch));
     CHECK(advance > 0.0f);
     CHECK_FALSE(data.vbo.empty());
@@ -282,9 +280,9 @@ TEST_CASE("font: get_back mirrors fill geometry", "[font][integration]") {
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> fill, back;
+  vectorfontstorm::buffer_data<test_vertex> fill, back;
   fx.font().get_fill(U'A', fill);
   fx.font().get_back(U'A', back);
 
@@ -305,10 +303,10 @@ TEST_CASE("font: get_edge produces extruded side geometry", "[font][integration]
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> edge;
-  float advance = fx.font().get_edge(U'A', edge);
+  vectorfontstorm::buffer_data<test_vertex> edge;
+  float const advance{fx.font().get_edge(U'A', edge)};
   CHECK(advance > 0.0f);
   CHECK_FALSE(edge.vbo.empty());
   // Edge quads are stored as triangle pairs (6 verts each) – size % 6 == 0
@@ -319,11 +317,11 @@ TEST_CASE("font: whitespace characters produce no geometry but positive advance"
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
   for(char32_t ch : std::u32string{U' '}) {
-    vectorfontstorm::buffer_data<TestVertex> data;
-    float advance = fx.font().get_outline(ch, data);
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_outline(ch, data)};
     INFO("Character: " << static_cast<char>(ch));
     CHECK(advance > 0.0f);
     CHECK(data.vbo.empty());
@@ -334,20 +332,20 @@ TEST_CASE("font: glyph caching returns identical data on repeated calls", "[font
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> first, second;
+  vectorfontstorm::buffer_data<test_vertex> first, second;
   fx.font().get_fill(U'G', first);
   fx.font().get_fill(U'G', second);
 
   REQUIRE(first.vbo.size() == second.vbo.size());
   REQUIRE(first.ibo.size() == second.ibo.size());
-  for(std::size_t i = 0; i < first.vbo.size(); ++i) {
+  for(size_t i{0}; i != first.vbo.size(); ++i) {
     CHECK(first.vbo[i].x == Catch::Approx(second.vbo[i].x));
     CHECK(first.vbo[i].y == Catch::Approx(second.vbo[i].y));
     CHECK(first.vbo[i].z == Catch::Approx(second.vbo[i].z));
   }
-  for(std::size_t i = 0; i < first.ibo.size(); ++i) {
+  for(size_t i{0}; i != first.ibo.size(); ++i) {
     CHECK(first.ibo[i] == second.ibo[i]);
   }
 }
@@ -356,10 +354,10 @@ TEST_CASE("font: combined get_outline_and_fill populates all three buffers", "[f
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> outline, fill, back;
-  float advance = fx.font().get_outline_and_fill(U'E', outline, fill, back);
+  vectorfontstorm::buffer_data<test_vertex> outline, fill, back;
+  float const advance{fx.font().get_outline_and_fill(U'E', outline, fill, back)};
 
   CHECK(advance > 0.0f);
   CHECK_FALSE(outline.vbo.empty());
@@ -378,10 +376,10 @@ TEST_CASE("font: combined get_outline_and_fill_and_edges populates all four buff
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> outline, fill, back, edge;
-  float advance = fx.font().get_outline_and_fill_and_edges(U'N', outline, fill, back, edge);
+  vectorfontstorm::buffer_data<test_vertex> outline, fill, back, edge;
+  float const advance{fx.font().get_outline_and_fill_and_edges(U'N', outline, fill, back, edge)};
 
   CHECK(advance > 0.0f);
   CHECK_FALSE(outline.vbo.empty());
@@ -394,12 +392,12 @@ TEST_CASE("font: different characters have different advances", "[font][integrat
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> d;
-  float adv_i = fx.font().get_outline(U'I', d);
+  vectorfontstorm::buffer_data<test_vertex> d;
+  float const adv_i{fx.font().get_outline(U'I', d)};
   d = {};
-  float adv_w = fx.font().get_outline(U'W', d);
+  float const adv_w{fx.font().get_outline(U'W', d)};
 
   // 'W' is wider than 'I' in almost every font
   CHECK(adv_w > adv_i);
@@ -409,9 +407,9 @@ TEST_CASE("font: vertices are within expected coordinate range for height=1", "[
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx(1.0);
+  font_fixture fx(1.0);
 
-  vectorfontstorm::buffer_data<TestVertex> data;
+  vectorfontstorm::buffer_data<test_vertex> data;
   fx.font().get_fill(U'A', data);
   REQUIRE_FALSE(data.vbo.empty());
 
@@ -430,18 +428,18 @@ TEST_CASE("font: height scaling produces proportional coordinates", "[font][inte
     SKIP("No test font available");
   }
 
-  std::vector<unsigned char> bytes = load_font_file(TEST_FONT_PATH);
+  std::vector<unsigned char> bytes{load_font_file(TEST_FONT_PATH)};
   REQUIRE_FALSE(bytes.empty());
-  vectorfontstorm::font<TestVertex> f1(bytes.data(), bytes.size(), 1.0);
-  vectorfontstorm::font<TestVertex> f2(bytes.data(), bytes.size(), 2.0);
+  vectorfontstorm::font<test_vertex> f1(bytes.data(), bytes.size(), 1.0);
+  vectorfontstorm::font<test_vertex> f2(bytes.data(), bytes.size(), 2.0);
 
-  vectorfontstorm::buffer_data<TestVertex> d1, d2;
+  vectorfontstorm::buffer_data<test_vertex> d1, d2;
   f1.get_fill(U'H', d1);
   f2.get_fill(U'H', d2);
 
   REQUIRE(d1.vbo.size() == d2.vbo.size());
   // Every vertex in the 2× font should be approximately twice the coordinate
-  for(std::size_t i = 0; i < d1.vbo.size(); ++i) {
+  for(size_t i{0}; i != d1.vbo.size(); ++i) {
     CHECK(d2.vbo[i].x == Catch::Approx(d1.vbo[i].x * 2.0f).margin(1e-4));
     CHECK(d2.vbo[i].y == Catch::Approx(d1.vbo[i].y * 2.0f).margin(1e-4));
   }
@@ -451,12 +449,12 @@ TEST_CASE("font: unicode characters produce geometry", "[font][integration]") {
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
   // DejaVuSans covers the Latin-1 supplement block
   for(char32_t ch : std::u32string{U'\u00C9', U'\u00D1', U'\u00DC'}) { // É Ñ Ü
-    vectorfontstorm::buffer_data<TestVertex> data;
-    float advance = fx.font().get_fill(ch, data);
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_fill(ch, data)};
     INFO("Codepoint: U+" << std::hex << static_cast<unsigned>(ch));
     CHECK(advance > 0.0f);
     CHECK_FALSE(data.vbo.empty());
@@ -467,10 +465,10 @@ TEST_CASE("font: glyph with two contours (letter with hole) triangulates correct
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
   // 'O' has an outer contour and an inner hole
-  vectorfontstorm::buffer_data<TestVertex> fill;
+  vectorfontstorm::buffer_data<test_vertex> fill;
   fx.font().get_fill(U'O', fill);
 
   REQUIRE_FALSE(fill.vbo.empty());
@@ -486,9 +484,9 @@ TEST_CASE("font: front-fill and back-fill have opposite z-coordinates", "[font][
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  FontFixture fx;
+  font_fixture fx;
 
-  vectorfontstorm::buffer_data<TestVertex> fill, back;
+  vectorfontstorm::buffer_data<test_vertex> fill, back;
   fx.font().get_fill(U'M', fill);
   fx.font().get_back(U'M', back);
 
@@ -510,11 +508,11 @@ TEST_CASE("font: swap correctly exchanges two font objects", "[font][integration
   if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
     SKIP("No test font available");
   }
-  std::vector<unsigned char> bytes = load_font_file(TEST_FONT_PATH);
+  std::vector<unsigned char> bytes{load_font_file(TEST_FONT_PATH)};
   REQUIRE_FALSE(bytes.empty());
 
-  vectorfontstorm::font<TestVertex> fa(bytes.data(), bytes.size(), 1.0);
-  vectorfontstorm::font<TestVertex> fb(bytes.data(), bytes.size(), 3.0);
+  vectorfontstorm::font<test_vertex> fa(bytes.data(), bytes.size(), 1.0);
+  vectorfontstorm::font<test_vertex> fb(bytes.data(), bytes.size(), 3.0);
 
   CHECK(fa.get_height() == Catch::Approx(1.0));
   CHECK(fb.get_height() == Catch::Approx(3.0));
