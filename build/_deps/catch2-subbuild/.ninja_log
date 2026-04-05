@@ -1,0 +1,21 @@
+# ninja log v7
+0	4	1775409547385619720	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-mkdir	aae49eb8f6e3331e
+0	4	1775409547385619720	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-mkdir	aae49eb8f6e3331e
+4	3564	1775409550945623650	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-download	47fe9a9e34c5d680
+4	3564	1775409550945623650	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-download	47fe9a9e34c5d680
+3564	3573	1775409550945623650	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-update	3218f42baf77afa6
+3564	3573	1775409550945623650	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-update	3218f42baf77afa6
+3573	3577	1775409550957623663	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-patch	214ec83eac5bde56
+3573	3577	1775409550957623663	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-patch	214ec83eac5bde56
+3577	3580	1775409550961623668	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-configure	8497bedecb17151a
+3577	3580	1775409550961623668	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-configure	8497bedecb17151a
+3580	3584	1775409550964623671	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-build	e1fea926f26d4348
+3580	3584	1775409550964623671	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-build	e1fea926f26d4348
+3584	3587	1775409550968623675	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-install	5c9eef5590b73cec
+3584	3587	1775409550968623675	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-install	5c9eef5590b73cec
+3587	3591	1775409550972623680	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-test	cb74dadcc6b13b3d
+3587	3591	1775409550972623680	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-test	cb74dadcc6b13b3d
+3591	3596	1775409550977623685	CMakeFiles/catch2-populate-complete	50ccd0c5ac9f88d8
+3591	3596	1775409550977623685	catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-done	50ccd0c5ac9f88d8
+3591	3596	1775409550977623685	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/CMakeFiles/catch2-populate-complete	50ccd0c5ac9f88d8
+3591	3596	1775409550977623685	/home/runner/work/vectorfontstorm/vectorfontstorm/build/_deps/catch2-subbuild/catch2-populate-prefix/src/catch2-populate-stamp/catch2-populate-done	50ccd0c5ac9f88d8
