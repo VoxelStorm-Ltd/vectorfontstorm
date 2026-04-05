@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(vectorfontstorm_tests CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CTest)
@@ -53,14 +53,6 @@ FetchContent_Declare(vectorstorm
 FetchContent_GetProperties(vectorstorm)
 if(NOT vectorstorm_POPULATED)
   FetchContent_Populate(vectorstorm)
-  # GCC 13 rejects uninitialized scalar variables in constexpr functions.
-  # vectorstorm/sincos.h declares two float temporaries without initializers;
-  # patch them using CMake string replacement (portable, idempotent).
-  file(READ "${vectorstorm_SOURCE_DIR}/vectorstorm/sincos.h" _sincos_content)
-  string(REPLACE "float out_sin_temp;" "float out_sin_temp = 0.0f;" _sincos_content "${_sincos_content}")
-  string(REPLACE "float out_cos_temp;" "float out_cos_temp = 0.0f;" _sincos_content "${_sincos_content}")
-  file(WRITE "${vectorstorm_SOURCE_DIR}/vectorstorm/sincos.h" "${_sincos_content}")
-  unset(_sincos_content)
 endif()
 
 # ---------------------------------------------------------------------------
