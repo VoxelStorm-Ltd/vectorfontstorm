@@ -46,15 +46,17 @@ jobs:
             --directory build \
             --output-file build/coverage.info \
             --ignore-errors mismatch
-          # Strip third-party and system paths
+          # Strip third-party and system paths.
+          # --ignore-errors unused prevents lcov from erroring when a pattern
+          # does not match any file (can happen with different lcov versions).
           lcov \
             --remove build/coverage.info \
               '/usr/*' \
               '*/tests/*' \
-              '*/Catch2/*' \
-              '*/catch2/*' \
+              '*/catch2-src/*' \
               '*/vectorstorm*/*' \
-            --output-file build/coverage_filtered.info
+            --output-file build/coverage_filtered.info \
+            --ignore-errors unused
           lcov --list build/coverage_filtered.info
 
       - name: Upload coverage to Codecov
