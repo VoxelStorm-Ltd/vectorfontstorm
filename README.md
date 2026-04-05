@@ -1,5 +1,6 @@
 # VectorFontStorm
 [![Tests](https://github.com/VoxelStorm-Ltd/vectorfontstorm/actions/workflows/tests.yml/badge.svg)](https://github.com/VoxelStorm-Ltd/vectorfontstorm/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/VoxelStorm-Ltd/vectorfontstorm/branch/master/graph/badge.svg)](https://codecov.io/gh/VoxelStorm-Ltd/vectorfontstorm)
 
 C++ vector font rendering library for OpenGL 3D text drawing, by VoxelStorm.
 
