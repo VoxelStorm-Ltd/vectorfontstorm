@@ -16,6 +16,7 @@ This is a legacy project that is not currently maintained, having been split out
 - GLFW (probably not actually required - just the includes need to be cleaned up)
 - GLEW (probably not actually required - just the includes need to be cleaned up)
 - [poly2tri](https://github.com/jhasse/poly2tri) (included) - 2D constrained Delaunay triangulation library
+- [cast_if_required](https://github.com/VoxelStorm-Ltd/libvoxelstorm) (included) - safe numeric cast helper, shared across VoxelStorm projects
 - [timestorm](https://github.com/VoxelStorm-Ltd/timestorm) - for diagnostics only, should be made optional
 
 ## Usage
