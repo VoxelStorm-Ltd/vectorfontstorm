@@ -128,15 +128,18 @@ void glyph<T>::cache_buffer() {
   while(c != contours.end()) {
     p2t::polylinetype polyline;
     c->get_outline(polyline);                                                   // the first must be an external contour
-    //if(polyline.empty()) {
-    //  std::cout << "VectorFontStorm: WARNING: Requested buffer from glyph with empty contour for fill!" << std::endl;
-    //  return;
-    //}
+    ++c;
+    if(polyline.size() < 3) {                                                   // poly2tri requires at least 3 points
+      while(c != contours.end() &&
+            c->get_winding() == contour<T>::windingtype::INTERNAL) {            // also skip any holes belonging to this degenerate contour
+        ++c;
+      }
+      continue;
+    }
     p2t::SweepContext sweep_context(polyline);
     #ifdef DEBUG_VECTORFONTSTORM_DETAILED
       std::cout << "VectorFontStorm: DEBUG: polyline size " << polyline.size() << std::endl;
     #endif // DEBUG_VECTORFONTSTORM_DETAILED
-    ++c;
     while(c != contours.end() &&
           c->get_winding() == contour<T>::windingtype::INTERNAL) {              // iterate through all holes
       p2t::polylinetype polyline_hole;
@@ -144,7 +147,9 @@ void glyph<T>::cache_buffer() {
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "VectorFontStorm:   DEBUG: hole size " << polyline_hole.size() << std::endl;
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
-      sweep_context.AddHole(polyline_hole);
+      if(polyline_hole.size() >= 3) {                                           // poly2tri requires at least 3 points for holes too
+        sweep_context.AddHole(polyline_hole);
+      }
       ++c;
     }
     p2t::Sweep sweep;
