@@ -170,6 +170,8 @@ TEST_CASE("glyph: get_outline triggers cache_buffer and detects whitespace witho
   CHECK(data.ibo.empty());
   CHECK(g.get_advance() == Catch::Approx(1.0f));
 }
+
+TEST_CASE("glyph: cache_buffer on empty glyph leaves fill empty", "[glyph]") {
   vectorfontstorm::glyph<test_vertex> g(U'Y', 0.4f);
   g.cache_buffer();
 
