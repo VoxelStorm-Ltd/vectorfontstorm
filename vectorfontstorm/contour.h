@@ -87,9 +87,9 @@ void contour<T>::get_outline(p2t::polylinetype &polyline_out) const {
     s.get_outline(polyline_out);
   }
   if(polyline_out.size() == index_start) {
-    #ifdef DEBUG_VECTORFONTSTORM
+    //#ifdef DEBUG_VECTORFONTSTORM
       std::cout << "VectorFontStorm: WARNING: Contour added nothing to polyline (size " << polyline_out.size() << ")" << std::endl;
-    #endif // DEBUG_VECTORFONTSTORM
+    //#endif // DEBUG_VECTORFONTSTORM
   } else {
     if(*polyline_out.back() == *polyline_out[index_start]) {
       // lop off the last point again, if it repeats the starting point - polylines are implicitly closed
