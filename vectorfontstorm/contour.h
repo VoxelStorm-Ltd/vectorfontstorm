@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -59,6 +60,7 @@ contour<T>::~contour() {
 template<typename T>
 segment<T> &contour<T>::get_second_to_last_segment() {
   /// Helper function to fetch the penultimate segment from the list
+  assert(segments.size() >= 2);
   return segments[segments.size() - 2];
 }
 

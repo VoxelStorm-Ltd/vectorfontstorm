@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -55,6 +56,7 @@ segment<T>::~segment() {
 template<typename T>
 point &segment<T>::get_second_to_last_point() {
   /// Helper function to fetch the penultimate point from the list
+  assert(points.size() >= 2);
   return points[points.size() - 2];
 }
 
