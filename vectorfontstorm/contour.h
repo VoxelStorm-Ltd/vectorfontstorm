@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -33,7 +34,7 @@ public:
   contour();
   ~contour();
 
-  segment<T> &get_second_to_last_segment() __attribute__((__pure__));
+  segment<T> &get_second_to_last_segment();
 
   void get_outline(buffer_data<T> &data_out) const;
   void get_outline(p2t::polylinetype &polyline_out) const;
@@ -58,10 +59,9 @@ contour<T>::~contour() {
 
 template<typename T>
 segment<T> &contour<T>::get_second_to_last_segment() {
-  /// Helper function to fetch the penultimate point from the list
-  //return segments.rbegin()[1];
-  // the above seems to produce corrupt results only when run under gdb!  Possibly a gdb bug.
-  return segments[segments.size() - 1];
+  /// Helper function to fetch the penultimate segment from the list
+  assert(segments.size() >= 2);
+  return segments[segments.size() - 2];
 }
 
 template<typename T>
@@ -191,7 +191,7 @@ void contour<T>::reverse() {
     s.reverse();                                                                // reverse the content of the segments
   }
   if(winding == windingtype::CLOCKWISE) {                                       // reverse the cached winding value, if known
-    winding = windingtype::COUNTERCLOCKWISE;
+    winding = windingtype::COUNTERCLOCKWISE;                                    // reverse the cached winding value, if known
   } else if(winding == windingtype::COUNTERCLOCKWISE) {
     winding = windingtype::CLOCKWISE;
   }

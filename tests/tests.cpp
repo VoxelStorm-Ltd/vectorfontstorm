@@ -144,6 +144,9 @@ TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
   // the internal whitespace flag.  After that, all get_* methods should
   // return nothing.
   g.correct_winding();
+  // Calling correct_winding a second time exercises the early-return path
+  // that skips processing when whitespace is already set.
+  g.correct_winding();
 
   vectorfontstorm::buffer_data<test_vertex> data;
   g.get_outline(data);
@@ -155,7 +158,20 @@ TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
   CHECK(data.ibo.empty());
 }
 
-TEST_CASE("glyph cache_buffer on empty glyph leaves data empty", "[glyph]") {
+TEST_CASE("glyph: get_outline triggers cache_buffer and detects whitespace without prior correct_winding", "[glyph]") {
+  // A glyph with no contours and whitespace not yet set (correct_winding not
+  // called).  The first get_outline() call finds an empty cache, triggers
+  // cache_buffer(), which discovers an empty outline and sets whitespace=true.
+  // The post-cache whitespace check in get_buffer() then returns early.
+  vectorfontstorm::glyph<test_vertex> g(U'x', 1.0f);
+  vectorfontstorm::buffer_data<test_vertex> data;
+  g.get_outline(data);
+  CHECK(data.vbo.empty());
+  CHECK(data.ibo.empty());
+  CHECK(g.get_advance() == Catch::Approx(1.0f));
+}
+
+TEST_CASE("glyph: cache_buffer on empty glyph leaves fill empty", "[glyph]") {
   vectorfontstorm::glyph<test_vertex> g(U'Y', 0.4f);
   g.cache_buffer();
 
@@ -521,4 +537,45 @@ TEST_CASE("font: swap correctly exchanges two font objects", "[font][integration
 
   CHECK(fa.get_height() == Catch::Approx(3.0));
   CHECK(fb.get_height() == Catch::Approx(1.0));
+}
+
+TEST_CASE("font: lowercase characters produce outline geometry", "[font][integration]") {
+  if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
+    SKIP("No test font available");
+  }
+  font_fixture fx;
+
+  // Lowercase letters with curves are common in TrueType fonts and exercise
+  // contour paths not covered by uppercase-only tests.
+  for(char32_t ch : std::u32string{U'a', U'b', U'c', U'd', U'e', U'f', U'g',
+                                    U'h', U'i', U'j', U'k', U'l', U'm', U'n',
+                                    U'o', U'p', U'q', U'r', U's', U't', U'u',
+                                    U'v', U'w', U'x', U'y', U'z'}) {
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_outline(ch, data)};
+    INFO("Character: " << static_cast<char>(ch));
+    CHECK(advance > 0.0f);
+    CHECK_FALSE(data.vbo.empty());
+    CHECK_FALSE(data.ibo.empty());
+  }
+}
+
+TEST_CASE("font: all four buffer types for a curved character", "[font][integration]") {
+  if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
+    SKIP("No test font available");
+  }
+  font_fixture fx;
+
+  // Exercise get_outline, get_fill, get_back and get_edge for characters that
+  // have both straight and curved segments.
+  for(char32_t ch : std::u32string{U'a', U'e', U'o', U's', U'c'}) {
+    vectorfontstorm::buffer_data<test_vertex> outline, fill, back, edge;
+    float const adv{fx.font().get_outline_and_fill_and_edges(ch, outline, fill, back, edge)};
+    INFO("Character: " << static_cast<char>(ch));
+    CHECK(adv > 0.0f);
+    CHECK_FALSE(outline.vbo.empty());
+    CHECK_FALSE(fill.vbo.empty());
+    CHECK_FALSE(back.vbo.empty());
+    CHECK_FALSE(edge.vbo.empty());
+  }
 }

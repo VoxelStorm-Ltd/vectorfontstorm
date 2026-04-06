@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -29,7 +30,7 @@ public:
   segment();
   ~segment();
 
-  point &get_second_to_last_point() __attribute__((__pure__));
+  point &get_second_to_last_point();
 
   void get_outline(buffer_data<T> &data_out) const;
   void get_outline(p2t::polylinetype &polyline_out) const;
@@ -55,9 +56,8 @@ segment<T>::~segment() {
 template<typename T>
 point &segment<T>::get_second_to_last_point() {
   /// Helper function to fetch the penultimate point from the list
-  //return points.rbegin()[1];
-  // the above seems to produce corrupt results only when run under gdb!  Possibly a gdb bug.
-  return points[points.size() - 1];
+  assert(points.size() >= 2);
+  return points[points.size() - 2];
 }
 
 template<typename T>
