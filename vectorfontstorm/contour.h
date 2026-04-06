@@ -87,9 +87,9 @@ void contour<T>::get_outline(p2t::polylinetype &polyline_out) const {
     s.get_outline(polyline_out);
   }
   if(polyline_out.size() == index_start) {
-    //#ifdef DEBUG_VECTORFONTSTORM
-      std::cout << "VectorFontStorm: WARNING: Contour added nothing to polyline (size " << polyline_out.size() << ")" << std::endl; // LCOV_EXCL_LINE
-    //#endif // DEBUG_VECTORFONTSTORM
+    #ifdef DEBUG_VECTORFONTSTORM
+      std::cout << "VectorFontStorm: WARNING: Contour added nothing to polyline (size " << polyline_out.size() << ")" << std::endl;
+    #endif // DEBUG_VECTORFONTSTORM
   } else {
     if(*polyline_out.back() == *polyline_out[index_start]) {
       // lop off the last point again, if it repeats the starting point - polylines are implicitly closed
@@ -120,16 +120,16 @@ template<typename T>
 typename contour<T>::windingtype contour<T>::get_winding() {
   /// Find out the orientation of this contour's winding
   if(winding != windingtype::UNTESTED) {
-    return winding;                                                             // use the cached value if it's known // LCOV_EXCL_LINE
+    return winding;                                                             // use the cached value if it's known
   }
   // adapted with reference to http://debian.fmi.uni-sofia.bg/~sergei/cgsr/docs/clockwise.htm
   // note: this may be unnecessarily expensive - you could do this with just two segments around one convex point, see https://en.wikipedia.org/wiki/Curve_orientation
   p2t::polylinetype polyline;
   get_outline(polyline);
   if(polyline.size() < 3) {
-    std::cout << "VectorFontStorm: WARNING: Contour has too few points to determine winding!" << std::endl; // LCOV_EXCL_LINE
-    winding = windingtype::INDETERMINATE; // LCOV_EXCL_LINE
-    return winding; // LCOV_EXCL_LINE
+    std::cout << "VectorFontStorm: WARNING: Contour has too few points to determine winding!" << std::endl;
+    winding = windingtype::INDETERMINATE;
+    return winding;
   }
   int count = 0;
   for(unsigned int i = 0; i != polyline.size(); ++i) {
@@ -151,8 +151,8 @@ typename contour<T>::windingtype contour<T>::get_winding() {
     #endif // DEBUG_VECTORFONTSTORM_DETAILED
     winding = windingtype::COUNTERCLOCKWISE;
   } else if(count == 0) {
-    std::cout << "VectorFontStorm: WARNING: Could not determine winding of a contour!" << std::endl; // LCOV_EXCL_LINE
-    winding = windingtype::INDETERMINATE; // LCOV_EXCL_LINE
+    std::cout << "VectorFontStorm: WARNING: Could not determine winding of a contour!" << std::endl;
+    winding = windingtype::INDETERMINATE;
   } else {
     #ifdef DEBUG_VECTORFONTSTORM_DETAILED
       std::cout << "VectorFontStorm: DEBUG:   Contour has clockwise winding (" << -count << " more right turns)" << std::endl;
@@ -191,7 +191,7 @@ void contour<T>::reverse() {
     s.reverse();                                                                // reverse the content of the segments
   }
   if(winding == windingtype::CLOCKWISE) {                                       // reverse the cached winding value, if known
-    winding = windingtype::COUNTERCLOCKWISE; // LCOV_EXCL_LINE
+    winding = windingtype::COUNTERCLOCKWISE;                                    // reverse the cached winding value, if known
   } else if(winding == windingtype::COUNTERCLOCKWISE) {
     winding = windingtype::CLOCKWISE;
   }

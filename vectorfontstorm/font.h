@@ -267,7 +267,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
             #ifndef NDEBUG
               std::cout << "VectorFontStorm: ERROR: unknown point type " << static_cast<unsigned int>(prevpoint.type) << " at contour " << c << " point " << p << " coords " << prevpoint.coords << "!" << std::endl;
             #endif // NDEBUG
-            break; // LCOV_EXCL_LINE
+            break;
           }
           thiscontour.segments.emplace_back();                                  // this segment had already been started, so this point closed it
           thiscontour.segments.back().points.emplace_back(thispoint);           // copy this point to start the next segment
@@ -302,18 +302,18 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
               #endif // DEBUG_VECTORFONTSTORM_DETAILED
             }
             break;
-          case point::types::OFF_THIRDORDER:                                    // conics shouldn't follow cubics! // LCOV_EXCL_START
+          case point::types::OFF_THIRDORDER:                                    // conics shouldn't follow cubics!
             std::cout << "VectorFontStorm: ERROR: got an illegal point: conic following a cubic, contour " << c << " point " << p << "!" << std::endl;
             return thisglyph;
           case point::types::VIRTUAL:
             #ifndef NDEBUG
               std::cout << "VectorFontStorm: ERROR: conic point following an impossible virtual point at contour " << c << " point " << p << "!" << std::endl;
             #endif
-            break; // LCOV_EXCL_STOP
+            break;
           }
         }
         break;
-      case point::types::OFF_THIRDORDER: // LCOV_EXCL_START
+      case point::types::OFF_THIRDORDER:
         /// NOTE: cubic curves are only used in Postscript CFF outlines, which
         /// are not supported in TrueType but are in OpenType.
         // TODO
@@ -321,7 +321,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         break;
       default:
         std::cout << "VectorFontStorm: ERROR: invalid point type " << c << " point " << p << " type " << static_cast<int>(ptype) << "!" << std::endl;
-        break; // LCOV_EXCL_STOP
+        break;
       }
     }
     // special treatment for last segment of the curve
@@ -336,7 +336,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
       thiscontour.segments.back().points.emplace_back(thiscontour.segments.front().points.front()); // and copy the first point to close the contour
       thiscontour.segments.back().type = segment<T>::types::LINE;
       break;
-    case point::types::OFF_SECONDORDER:                                         // this shouldn't ever happen unless virtual point creation fucked up earlier // LCOV_EXCL_START
+    case point::types::OFF_SECONDORDER:                                         // this shouldn't ever happen unless virtual point creation fucked up earlier
       std::cout << "VectorFontStorm: ERROR: incorrect opening of contour " << c << " with a second order point - virtual point creation must have failed!" << std::endl;
       break;
     case point::types::OFF_THIRDORDER:
@@ -352,7 +352,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         thiscontour.segments.back().points.emplace_back(first_virtual);         // copy it to close this segment
         thiscontour.segments.back().type = segment<T>::types::CONIC;
       }
-      break; // LCOV_EXCL_STOP
+      break;
     }
     point_start = point_end + 1;
   }

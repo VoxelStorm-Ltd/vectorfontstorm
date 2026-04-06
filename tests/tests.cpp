@@ -158,7 +158,18 @@ TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
   CHECK(data.ibo.empty());
 }
 
-TEST_CASE("glyph cache_buffer on empty glyph leaves data empty", "[glyph]") {
+TEST_CASE("glyph: get_outline triggers cache_buffer and detects whitespace without prior correct_winding", "[glyph]") {
+  // A glyph with no contours and whitespace not yet set (correct_winding not
+  // called).  The first get_outline() call finds an empty cache, triggers
+  // cache_buffer(), which discovers an empty outline and sets whitespace=true.
+  // The post-cache whitespace check in get_buffer() then returns early.
+  vectorfontstorm::glyph<test_vertex> g(U'x', 1.0f);
+  vectorfontstorm::buffer_data<test_vertex> data;
+  g.get_outline(data);
+  CHECK(data.vbo.empty());
+  CHECK(data.ibo.empty());
+  CHECK(g.get_advance() == Catch::Approx(1.0f));
+}
   vectorfontstorm::glyph<test_vertex> g(U'Y', 0.4f);
   g.cache_buffer();
 
