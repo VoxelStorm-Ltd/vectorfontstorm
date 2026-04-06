@@ -58,10 +58,8 @@ contour<T>::~contour() {
 
 template<typename T>
 segment<T> &contour<T>::get_second_to_last_segment() {
-  /// Helper function to fetch the penultimate point from the list
-  //return segments.rbegin()[1];
-  // the above seems to produce corrupt results only when run under gdb!  Possibly a gdb bug.
-  return segments[segments.size() - 1];
+  /// Helper function to fetch the penultimate segment from the list
+  return segments[segments.size() - 2];
 }
 
 template<typename T>

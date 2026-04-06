@@ -55,9 +55,7 @@ segment<T>::~segment() {
 template<typename T>
 point &segment<T>::get_second_to_last_point() {
   /// Helper function to fetch the penultimate point from the list
-  //return points.rbegin()[1];
-  // the above seems to produce corrupt results only when run under gdb!  Possibly a gdb bug.
-  return points[points.size() - 1];
+  return points[points.size() - 2];
 }
 
 template<typename T>

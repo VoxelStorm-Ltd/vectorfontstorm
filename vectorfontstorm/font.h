@@ -246,7 +246,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a straight line at " << prevpoint.coords << std::endl;
             #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
-          case point::types::OFF_SECONDORDER: // LCOV_EXCL_START
+          case point::types::OFF_SECONDORDER:
             thiscontour.segments.back().type = segment<T>::types::CONIC;        // this was a conic bezier curve
             #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a conic bezier at " << prevpoint.coords << std::endl;
@@ -267,7 +267,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
             #ifndef NDEBUG
               std::cout << "VectorFontStorm: ERROR: unknown point type " << static_cast<unsigned int>(prevpoint.type) << " at contour " << c << " point " << p << " coords " << prevpoint.coords << "!" << std::endl;
             #endif // NDEBUG
-            break; // LCOV_EXCL_STOP
+            break; // LCOV_EXCL_LINE
           }
           thiscontour.segments.emplace_back();                                  // this segment had already been started, so this point closed it
           thiscontour.segments.back().points.emplace_back(thispoint);           // copy this point to start the next segment
@@ -281,11 +281,11 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         } else {
           point &prevpoint(thiscontour.segments.back().get_second_to_last_point()); // get the second-to-last
           switch(prevpoint.type) {
-          case point::types::ON:                                                // this is the first conic control point of this segment // LCOV_EXCL_START
+          case point::types::ON:                                                // this is the first conic control point of this segment
             #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was the first conic control point" << std::endl;
             #endif // DEBUG_VECTORFONTSTORM_DETAILED
-            break; // LCOV_EXCL_STOP
+            break;
           case point::types::OFF_SECONDORDER:                                   // this is a continuing conic bezier
             {
               // split the segment with a virtual ON point at the midpoint
