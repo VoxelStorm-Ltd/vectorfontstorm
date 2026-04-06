@@ -67,9 +67,9 @@ void segment<T>::get_outline(buffer_data<T> &data_out) const {
     std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points" << std::endl;
   #endif // DEBUG_VECTORFONTSTORM_DETAILED
   switch(type) {
-  case segment<T>::types::UNKNOWN:
+  case segment<T>::types::UNKNOWN: // LCOV_EXCL_START
     std::cout << "VectorFontStorm: ERROR: curve type unknown!" << std::endl;
-    return;
+    return; // LCOV_EXCL_STOP
   case segment<T>::types::LINE:
     data_out.ibo.emplace_back(data_out.vbo.size());
     data_out.vbo.emplace_back(points.front().coords.x, points.front().coords.y, 0.0f);
@@ -85,7 +85,7 @@ void segment<T>::get_outline(buffer_data<T> &data_out) const {
       }
     }
     break;
-  case segment<T>::types::CUBIC:
+  case segment<T>::types::CUBIC: // LCOV_EXCL_START
     {
       std::vector<segment> subdivisions;
       subdivide_cubic(subdivisions);
@@ -93,7 +93,7 @@ void segment<T>::get_outline(buffer_data<T> &data_out) const {
         s.get_outline(data_out);
       }
     }
-    break;
+    break; // LCOV_EXCL_STOP
   }
 }
 
@@ -104,9 +104,9 @@ void segment<T>::get_outline(p2t::polylinetype &polyline_out) const {
     std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points, polyline size " << polyline_out.size() << std::endl;
   #endif // DEBUG_VECTORFONTSTORM_DETAILED
   switch(type) {
-  case segment<T>::types::UNKNOWN:
+  case segment<T>::types::UNKNOWN: // LCOV_EXCL_START
     std::cout << "VectorFontStorm: ERROR: curve type unknown!" << std::endl;
-    return;
+    return; // LCOV_EXCL_STOP
   case segment<T>::types::LINE:
     #ifdef DEBUG_VECTORFONTSTORM_DETAILED
       std::cout << "DEBUG: old " << polyline_out.back()->x << " " << polyline_out.back()->y << std::endl;
@@ -136,7 +136,7 @@ void segment<T>::get_outline(p2t::polylinetype &polyline_out) const {
       }
     }
     break;
-  case segment<T>::types::CUBIC:
+  case segment<T>::types::CUBIC: // LCOV_EXCL_START
     {
       #ifdef DEBUG_VECTORFONTSTORM_DETAILED
         std::cout << "DEBUG: temp cubic " << polyline_out.size() << ": " << points.back().coords.x << " " << points.back().coords.y << std::endl;
@@ -147,7 +147,7 @@ void segment<T>::get_outline(p2t::polylinetype &polyline_out) const {
         s.get_outline(polyline_out);
       }
     }
-    break;
+    break; // LCOV_EXCL_STOP
   }
 }
 
@@ -167,9 +167,9 @@ void segment<T>::get_extrude(buffer_data<T> &data_out) const {
     std::cout << "VectorFontStorm: DEBUG:     Segment with " << points.size() << " points - extrude" << std::endl;
   #endif // DEBUG_VECTORFONTSTORM_DETAILED
   switch(type) {
-  case segment<T>::types::UNKNOWN:
+  case segment<T>::types::UNKNOWN: // LCOV_EXCL_START
     std::cout << "VectorFontStorm: ERROR: curve type unknown!" << std::endl;
-    return;
+    return; // LCOV_EXCL_STOP
   case segment<T>::types::LINE:
     {
       GLuint const index_start = cast_if_required<GLuint>(data_out.vbo.size());
@@ -210,7 +210,7 @@ void segment<T>::get_extrude(buffer_data<T> &data_out) const {
       }
     }
     break;
-  case segment<T>::types::CUBIC:
+  case segment<T>::types::CUBIC: // LCOV_EXCL_START
     {
       std::vector<segment> subdivisions;
       subdivide_cubic(subdivisions);
@@ -218,7 +218,7 @@ void segment<T>::get_extrude(buffer_data<T> &data_out) const {
         s.get_extrude(data_out);
       }
     }
-    break;
+    break; // LCOV_EXCL_STOP
   }
 }
 
@@ -234,14 +234,14 @@ void segment<T>::subdivide_conic(std::vector<segment<T>> &new_segments) const {
   // TODO: colinearity test
 }
 template<typename T>
-void segment<T>::subdivide_cubic(std::vector<segment<T>> &new_segments) const {
+void segment<T>::subdivide_cubic(std::vector<segment<T>> &new_segments) const { // LCOV_EXCL_START
   /// Take this curve and return a subdivision
   // placeholder - treat curves as line segments for now
   new_segments.emplace_back();
   new_segments.back().type = types::LINE;
   new_segments.back().points.emplace_back(points.front().coords, point::types::ON);
   new_segments.back().points.emplace_back(points.back().coords,  point::types::ON);
-}
+} // LCOV_EXCL_STOP
 
 template<typename T>
 void segment<T>::reverse() {

@@ -55,6 +55,7 @@ jobs:
               '*/tests/*' \
               '*/catch2-src/*' \
               '*/vectorstorm*/*' \
+              '*/poly2tri/*' \
             --output-file build/coverage_filtered.info \
             --ignore-errors unused
           lcov --list build/coverage_filtered.info

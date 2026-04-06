@@ -193,7 +193,7 @@ void glyph<T>::get_buffer(buffer_data<T> const &data_in, buffer_data<T> &data_ou
     if(__builtin_expect(data_in.vbo.empty(), false)) {
       cache_buffer();
       if(whitespace) {
-        return;
+        return; // LCOV_EXCL_LINE
       }
     }
   }

@@ -144,6 +144,9 @@ TEST_CASE("glyph correct_winding marks empty glyph as whitespace", "[glyph]") {
   // the internal whitespace flag.  After that, all get_* methods should
   // return nothing.
   g.correct_winding();
+  // Calling correct_winding a second time exercises the early-return path
+  // that skips processing when whitespace is already set.
+  g.correct_winding();
 
   vectorfontstorm::buffer_data<test_vertex> data;
   g.get_outline(data);
@@ -521,4 +524,44 @@ TEST_CASE("font: swap correctly exchanges two font objects", "[font][integration
 
   CHECK(fa.get_height() == Catch::Approx(3.0));
   CHECK(fb.get_height() == Catch::Approx(1.0));
+}
+
+TEST_CASE("font: lowercase characters produce outline geometry", "[font][integration]") {
+  if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
+    SKIP("No test font available");
+  }
+  font_fixture fx;
+
+  // Lowercase letters with curves are common in TrueType fonts and exercise
+  // contour paths not covered by uppercase-only tests.  Use get_outline (no
+  // triangulation) to avoid poly2tri edge cases on degenerate contours.
+  for(char32_t ch : std::u32string{U'a', U'b', U'c', U'd', U'e', U'f', U'g',
+                                    U'h', U'i', U'j', U'k', U'l', U'm', U'n',
+                                    U'o', U'p', U'q', U'r', U's', U't', U'u',
+                                    U'v', U'w', U'x', U'y', U'z'}) {
+    vectorfontstorm::buffer_data<test_vertex> data;
+    float const advance{fx.font().get_outline(ch, data)};
+    INFO("Character: " << static_cast<char>(ch));
+    CHECK(advance > 0.0f);
+  }
+}
+
+TEST_CASE("font: all four buffer types for a curved character", "[font][integration]") {
+  if(!FONT_PATH_DEFINED || std::string(TEST_FONT_PATH).empty()) {
+    SKIP("No test font available");
+  }
+  font_fixture fx;
+
+  // Exercise get_outline, get_fill, get_back and get_edge for characters that
+  // have both straight and curved segments.
+  for(char32_t ch : std::u32string{U'a', U'e', U'o', U's', U'c'}) {
+    vectorfontstorm::buffer_data<test_vertex> outline, fill, back, edge;
+    float const adv{fx.font().get_outline_and_fill_and_edges(ch, outline, fill, back, edge)};
+    INFO("Character: " << static_cast<char>(ch));
+    CHECK(adv > 0.0f);
+    CHECK_FALSE(outline.vbo.empty());
+    CHECK_FALSE(fill.vbo.empty());
+    CHECK_FALSE(back.vbo.empty());
+    CHECK_FALSE(edge.vbo.empty());
+  }
 }

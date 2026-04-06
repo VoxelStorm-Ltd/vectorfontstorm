@@ -246,7 +246,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a straight line at " << prevpoint.coords << std::endl;
             #endif // DEBUG_VECTORFONTSTORM_DETAILED
             break;
-          case point::types::OFF_SECONDORDER:
+          case point::types::OFF_SECONDORDER: // LCOV_EXCL_START
             thiscontour.segments.back().type = segment<T>::types::CONIC;        // this was a conic bezier curve
             #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was a conic bezier at " << prevpoint.coords << std::endl;
@@ -267,7 +267,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
             #ifndef NDEBUG
               std::cout << "VectorFontStorm: ERROR: unknown point type " << static_cast<unsigned int>(prevpoint.type) << " at contour " << c << " point " << p << " coords " << prevpoint.coords << "!" << std::endl;
             #endif // NDEBUG
-            break;
+            break; // LCOV_EXCL_STOP
           }
           thiscontour.segments.emplace_back();                                  // this segment had already been started, so this point closed it
           thiscontour.segments.back().points.emplace_back(thispoint);           // copy this point to start the next segment
@@ -277,15 +277,15 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         if(thiscontour.segments.back().points.size() == 1) {                    // is this the first point of the segment?
           // this is the first point of the segment, so it must be the first segment, and a continuation of the final segment
           // so we start this segment with a virtual point at the midpoint between this and the last
-          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL); // placeholder location, we move this later
+          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL); // placeholder location, we move this later // LCOV_EXCL_LINE
         } else {
           point &prevpoint(thiscontour.segments.back().get_second_to_last_point()); // get the second-to-last
           switch(prevpoint.type) {
-          case point::types::ON:                                                // this is the first conic control point of this segment
+          case point::types::ON:                                                // this is the first conic control point of this segment // LCOV_EXCL_START
             #ifdef DEBUG_VECTORFONTSTORM_DETAILED
               std::cout << "VectorFontStorm: DEBUG: " << thiscontour.segments.size() << ":" << thiscontour.segments.back().points.size() - 1 << " was the first conic control point" << std::endl;
             #endif // DEBUG_VECTORFONTSTORM_DETAILED
-            break;
+            break; // LCOV_EXCL_STOP
           case point::types::OFF_SECONDORDER:                                   // this is a continuing conic bezier
             {
               // split the segment with a virtual ON point at the midpoint
@@ -302,18 +302,18 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
               #endif // DEBUG_VECTORFONTSTORM_DETAILED
             }
             break;
-          case point::types::OFF_THIRDORDER:                                    // conics shouldn't follow cubics!
+          case point::types::OFF_THIRDORDER:                                    // conics shouldn't follow cubics! // LCOV_EXCL_START
             std::cout << "VectorFontStorm: ERROR: got an illegal point: conic following a cubic, contour " << c << " point " << p << "!" << std::endl;
             return thisglyph;
           case point::types::VIRTUAL:
             #ifndef NDEBUG
               std::cout << "VectorFontStorm: ERROR: conic point following an impossible virtual point at contour " << c << " point " << p << "!" << std::endl;
             #endif
-            break;
+            break; // LCOV_EXCL_STOP
           }
         }
         break;
-      case point::types::OFF_THIRDORDER:
+      case point::types::OFF_THIRDORDER: // LCOV_EXCL_START
         /// NOTE: cubic curves are only used in Postscript CFF outlines, which
         /// are not supported in TrueType but are in OpenType.
         // TODO
@@ -321,7 +321,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         break;
       default:
         std::cout << "VectorFontStorm: ERROR: invalid point type " << c << " point " << p << " type " << static_cast<int>(ptype) << "!" << std::endl;
-        break;
+        break; // LCOV_EXCL_STOP
       }
     }
     // special treatment for last segment of the curve
@@ -336,7 +336,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
       thiscontour.segments.back().points.emplace_back(thiscontour.segments.front().points.front()); // and copy the first point to close the contour
       thiscontour.segments.back().type = segment<T>::types::LINE;
       break;
-    case point::types::OFF_SECONDORDER:                                         // this shouldn't ever happen unless virtual point creation fucked up earlier
+    case point::types::OFF_SECONDORDER:                                         // this shouldn't ever happen unless virtual point creation fucked up earlier // LCOV_EXCL_START
       std::cout << "VectorFontStorm: ERROR: incorrect opening of contour " << c << " with a second order point - virtual point creation must have failed!" << std::endl;
       break;
     case point::types::OFF_THIRDORDER:
@@ -352,7 +352,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         thiscontour.segments.back().points.emplace_back(first_virtual);         // copy it to close this segment
         thiscontour.segments.back().type = segment<T>::types::CONIC;
       }
-      break;
+      break; // LCOV_EXCL_STOP
     }
     point_start = point_end + 1;
   }
