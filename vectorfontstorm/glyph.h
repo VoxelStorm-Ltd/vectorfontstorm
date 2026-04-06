@@ -130,6 +130,7 @@ void glyph<T>::cache_buffer() {
     c->get_outline(polyline);                                                   // the first must be an external contour
     ++c;
     if(polyline.size() < 3) {                                                   // poly2tri requires at least 3 points
+      std::cout << "VectorFontStorm: WARNING: Skipping degenerate contour with " << polyline.size() << " points (poly2tri requires at least 3)" << std::endl;
       while(c != contours.end() &&
             c->get_winding() == contour<T>::windingtype::INTERNAL) {            // also skip any holes belonging to this degenerate contour
         ++c;
@@ -149,6 +150,8 @@ void glyph<T>::cache_buffer() {
       #endif // DEBUG_VECTORFONTSTORM_DETAILED
       if(polyline_hole.size() >= 3) {                                           // poly2tri requires at least 3 points for holes too
         sweep_context.AddHole(polyline_hole);
+      } else {
+        std::cout << "VectorFontStorm: WARNING: Skipping degenerate hole with " << polyline_hole.size() << " points (poly2tri requires at least 3)" << std::endl;
       }
       ++c;
     }
