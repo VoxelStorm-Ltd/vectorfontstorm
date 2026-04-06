@@ -30,7 +30,7 @@ public:
   segment();
   ~segment();
 
-  point &get_second_to_last_point() __attribute__((__pure__));
+  point &get_second_to_last_point();
 
   void get_outline(buffer_data<T> &data_out) const;
   void get_outline(p2t::polylinetype &polyline_out) const;

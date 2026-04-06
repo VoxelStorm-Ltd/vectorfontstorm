@@ -34,7 +34,7 @@ public:
   contour();
   ~contour();
 
-  segment<T> &get_second_to_last_segment() __attribute__((__pure__));
+  segment<T> &get_second_to_last_segment();
 
   void get_outline(buffer_data<T> &data_out) const;
   void get_outline(p2t::polylinetype &polyline_out) const;

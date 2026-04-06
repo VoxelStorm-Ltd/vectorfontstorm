@@ -277,7 +277,7 @@ glyph<T> &font<T>::load_glyph_from_freetype(char32_t const thischar, glyph_map_i
         if(thiscontour.segments.back().points.size() == 1) {                    // is this the first point of the segment?
           // this is the first point of the segment, so it must be the first segment, and a continuation of the final segment
           // so we start this segment with a virtual point at the midpoint between this and the last
-          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL); // placeholder location, we move this later // LCOV_EXCL_LINE
+          thiscontour.segments.back().points.emplace(thiscontour.segments.back().points.begin(), vector2f(), point::types::VIRTUAL); // placeholder location, we move this later
         } else {
           point &prevpoint(thiscontour.segments.back().get_second_to_last_point()); // get the second-to-last
           switch(prevpoint.type) {
