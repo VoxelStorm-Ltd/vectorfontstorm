@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <boost/range/iterator_range.hpp>
 #include "buffer_data.h"
 #include "cast_if_required.h"
